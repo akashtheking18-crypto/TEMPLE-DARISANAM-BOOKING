@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivineConnect – Smart Temple Booking & Devotional Services</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛕</text></svg>">
+    <style>
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Devotional Marquee -->
+    <div class="top-devotional-bar">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span class="fw-bold">॥ ॐ नमः शिवाय ॥ ॐ नमो नारायणाय ॥ ॐ சரவணபவ ॥</span>
+                <span class="d-none d-md-inline text-warning">✦ Smart Temple Booking Platform</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 small">
+                <span><i class="bi bi-clock-history text-warning"></i> Darshan Timings: 05:30 AM – 09:30 PM</span>
+                <span class="d-none d-sm-inline">|</span>
+                <span class="badge bg-warning text-dark"><i class="bi bi-shield-check"></i> Live Demonstration</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-divine">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-divine" href="javascript:void(0)" onclick="switchView('home')">
+                <div class="brand-logo-icon">
+                    <i class="bi bi-bank2"></i>
+                </div>
+                <div>
+                    <h1 class="brand-title">DivineConnect</h1>
+                    <div class="brand-tagline">Temple Seva & Pilgrimage</div>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-divine active" id="nav-link-home" href="javascript:void(0)" onclick="switchView('home')">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-divine" id="nav-link-temples" href="javascript:void(0)" onclick="switchView('temples')">
+                            <i class="bi bi-building"></i> Temples & Darshan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-divine" id="nav-link-store" href="javascript:void(0)" onclick="switchView('store')">
+                            <i class="bi bi-bag-heart"></i> Pooja Store
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-divine" id="nav-link-prasadam" href="javascript:void(0)" onclick="switchView('prasadam')">
+                            <i class="bi bi-basket2"></i> Temple Prasadam
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- User & Cart Controls -->
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Cart Button -->
+                    <button onclick="switchView('cart')" class="btn btn-outline-dark position-relative rounded-pill px-3 py-2 d-flex align-items-center gap-2" style="border-color: var(--color-gold-border);">
+                        <i class="bi bi-cart3 text-danger fs-5"></i>
+                        <span class="d-none d-sm-inline fw-semibold">Cart</span>
+                        <span id="nav-cart-badge" class="badge-divine cart-badge-count" style="display: none;">0</span>
+                    </button>
+
+                    <!-- User Account / Login State -->
+                    <div id="auth-nav-container">
+                        <button class="btn btn-divine-outline px-3 py-2" onclick="openLoginModal()">
+                            <i class="bi bi-person"></i> Sign In
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Demonstration Disclaimer Banner -->
+    <div class="bg-warning-subtle text-dark border-bottom py-1 text-center small">
+        <div class="container d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-info-circle-fill text-warning-emphasis"></i>
+            <span><strong>Notice:</strong> DivineConnect is an educational prototype and demonstration pilgrimage platform. Ticket reservations, pooja tokens, and mock payments simulate real temple booking workflows.</span>
+        </div>
+    </div>
+
+    <!-- MAIN VIEWS CONTAINER -->
+    <main class="flex-grow-1">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: HOME PAGE                          -->
+        <!-- ========================================== -->
+        <section id="view-home" class="view-section active">
+            <!-- Hero Banner -->
+            <div class="hero-divine">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <div class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+                                🪔 Blessed Temple Pilgrimage & Sacred Sevas
+                            </div>
+                            <h1 class="hero-title">Experience the Divine Grace of <span>South Indian Temples</span></h1>
+                            <p class="hero-subtitle mx-auto">
+                                Seamless online Darshan slot reservations, Vedic Archana & Abhishekam bookings, authentic temple-made prasadams, and sacred samagri delivered right to your home.
+                            </p>
+
+                            <!-- Temple Search Box -->
+                            <div class="hero-search-card text-start">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-5">
+                                        <label class="form-label-divine small mb-1"><i class="bi bi-search text-danger"></i> Temple Name / Deity</label>
+                                        <input type="text" id="home-search-query" class="form-control form-control-divine" placeholder="e.g. Meenakshi, Shiva, Murugan, Balaji...">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label-divine small mb-1"><i class="bi bi-geo-alt text-danger"></i> City / State</label>
+                                        <select id="home-search-city" class="form-select form-select-divine">
+                                            <option value="">All Sacred Cities</option>
+                                            <option value="Madurai">Madurai</option>
+                                            <option value="Tirupati">Tirupati</option>
+                                            <option value="Thanjavur">Thanjavur</option>
+                                            <option value="Rameswaram">Rameswaram</option>
+                                            <option value="Palani">Palani</option>
+                                            <option value="Guruvayur">Guruvayur</option>
+                                            <option value="Chennai">Chennai</option>
+                                            <option value="Srirangam">Srirangam</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mt-3 mt-md-0 d-grid">
+                                        <label class="d-none d-md-block form-label-divine small mb-1 invisible">Search</label>
+                                        <button type="button" class="btn btn-divine-primary py-2" onclick="performHomeSearch()">
+                                            <i class="bi bi-search"></i> Search Temples
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Quick Pillars -->
+            <div class="py-5" style="background: var(--color-sand);">
+                <div class="container">
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-sm-6">
+                            <a href="javascript:void(0)" onclick="switchView('temples')" class="quick-tile">
+                                <div class="quick-tile-icon">🛕</div>
+                                <h3 class="quick-tile-title">Darshan Booking</h3>
+                                <p class="quick-tile-desc">Normal, Special & VIP Sheegra Darshan with live quota capacity and instant QR pass.</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <a href="javascript:void(0)" onclick="openPoojaView(1)" class="quick-tile">
+                                <div class="quick-tile-icon">🪔</div>
+                                <h3 class="quick-tile-title">Pooja Sevas</h3>
+                                <p class="quick-tile-desc">Archana, Maha Rudrabhishekam & Kalyanotsavam with your Nakshatra & Gothra sankalpam.</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <a href="javascript:void(0)" onclick="switchView('prasadam')" class="quick-tile">
+                                <div class="quick-tile-icon">🍯</div>
+                                <h3 class="quick-tile-title">Temple Prasadam</h3>
+                                <p class="quick-tile-desc">Tirupati Laddu, Palani Panchamirtham, Madurai Puliyodarai & Kovil Sakkarai Pongal.</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <a href="javascript:void(0)" onclick="switchView('store')" class="quick-tile">
+                                <div class="quick-tile-icon">🛍️</div>
+                                <h3 class="quick-tile-title">Online Pooja Store</h3>
+                                <p class="quick-tile-desc">Fresh Madurai malli garlands, pure Bhimseni camphor, brass deepams, and complete pooja kits.</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Temples -->
+            <div class="py-5">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-subtitle">Sacred Sanctuaries</div>
+                        <h2 class="section-title">Featured South Indian Temples</h2>
+                        <div class="section-divider">✦ 🛕 ✦</div>
+                    </div>
+                    <div class="row g-4" id="home-featured-temples-row"></div>
+                    <div class="text-center mt-5">
+                        <button onclick="switchView('temples')" class="btn btn-divine-gold px-4 py-2">
+                            <i class="bi bi-compass"></i> Explore All Temples
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Temple Festivals Banner -->
+            <div class="py-5 bg-white border-top border-bottom">
+                <div class="container">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-4">
+                            <div class="p-4 rounded-4" style="background: linear-gradient(135deg, var(--color-maroon) 0%, var(--color-saffron) 100%); color: white;">
+                                <div class="badge bg-warning text-dark mb-2 fw-bold">Utsavam Calendar</div>
+                                <h3 class="text-white temple-font mb-2">Upcoming Sacred Festivals</h3>
+                                <p class="small text-light-emphasis mb-3">
+                                    Join millions of devotees in celebrating auspicious celestial festivals with special darshans and alankaram.
+                                </p>
+                                <button onclick="switchView('temples')" class="btn btn-light btn-sm fw-bold text-danger px-3">
+                                    Plan Festive Pilgrimage
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded-3 h-100 shadow-sm" style="background: var(--color-cream); border-color: var(--color-gold-border) !important;">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h5 class="fw-bold mb-0 text-danger fs-6">Panguni Uthiram & Meenakshi Thirukalyanam</h5>
+                                            <span class="badge bg-danger-subtle text-danger small">March 23, 2026</span>
+                                        </div>
+                                        <div class="small fw-semibold text-warning-emphasis mb-1"><i class="bi bi-geo-alt"></i> Madurai & Mylapore</div>
+                                        <p class="small text-muted mb-0">Celebration of divine celestial weddings with grand car chariot processions.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded-3 h-100 shadow-sm" style="background: var(--color-cream); border-color: var(--color-gold-border) !important;">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h5 class="fw-bold mb-0 text-danger fs-6">Sri Rama Navami Brahmotsavam</h5>
+                                            <span class="badge bg-danger-subtle text-danger small">March 27, 2026</span>
+                                        </div>
+                                        <div class="small fw-semibold text-warning-emphasis mb-1"><i class="bi bi-geo-alt"></i> Rameswaram & Bhadrachalam</div>
+                                        <p class="small text-muted mb-0">Grand rathotsavam and special holy teertham abhishekam.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded-3 h-100 shadow-sm" style="background: var(--color-cream); border-color: var(--color-gold-border) !important;">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h5 class="fw-bold mb-0 text-danger fs-6">Chithirai Festival (Vaigai Entry)</h5>
+                                            <span class="badge bg-danger-subtle text-danger small">April 18, 2026</span>
+                                        </div>
+                                        <div class="small fw-semibold text-warning-emphasis mb-1"><i class="bi bi-geo-alt"></i> Madurai</div>
+                                        <p class="small text-muted mb-0">Millions assemble as Lord Kallazhagar mounts His golden horse into River Vaigai.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded-3 h-100 shadow-sm" style="background: var(--color-cream); border-color: var(--color-gold-border) !important;">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h5 class="fw-bold mb-0 text-danger fs-6">Vaikunta Ekadasi Special Darshan</h5>
+                                            <span class="badge bg-danger-subtle text-danger small">December 20, 2026</span>
+                                        </div>
+                                        <div class="small fw-semibold text-warning-emphasis mb-1"><i class="bi bi-geo-alt"></i> Srirangam & Tirupati</div>
+                                        <p class="small text-muted mb-0">Opening of sacred Paramapada Vaasal for holy salvation and eternal grace.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Prasadam & Store Teasers -->
+            <div class="py-5" style="background: var(--color-cream-light);">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-subtitle">Maha Naivedyam</div>
+                        <h2 class="section-title">Popular Temple Prasadam</h2>
+                        <div class="section-divider">✦ 🍯 ✦</div>
+                    </div>
+                    <div class="row g-4" id="home-prasadams-row"></div>
+                    <div class="text-center mt-4">
+                        <button onclick="switchView('prasadam')" class="btn btn-divine-outline px-4 py-2">
+                            View All Temple Prasadams
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: TEMPLES DIRECTORY                  -->
+        <!-- ========================================== -->
+        <section id="view-temples" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <h1 class="temple-font text-white mb-2">Sacred South Indian Temples</h1>
+                <p class="small text-light-emphasis mb-0">Explore historic kshetrams, timings, dress codes, and reserve authorized darshan slots.</p>
+            </div>
+            <div class="container py-4">
+                <div class="p-3 mb-4 rounded-3 border shadow-sm" style="background: #FFFDF9; border-color: var(--color-gold-border) !important;">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <input type="text" id="filter-temple-name" class="form-control form-control-divine" placeholder="Search by name or deity..." onkeyup="filterTemples()">
+                        </div>
+                        <div class="col-md-4">
+                            <select id="filter-temple-city" class="form-select form-select-divine" onchange="filterTemples()">
+                                <option value="">All Sacred Cities</option>
+                                <option value="Madurai">Madurai</option>
+                                <option value="Tirupati">Tirupati</option>
+                                <option value="Thanjavur">Thanjavur</option>
+                                <option value="Rameswaram">Rameswaram</option>
+                                <option value="Palani">Palani</option>
+                                <option value="Guruvayur">Guruvayur</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Srirangam">Srirangam</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-grid">
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetTempleFilters()">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4" id="temples-grid-row"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: TEMPLE DETAILS                     -->
+        <!-- ========================================== -->
+        <section id="view-temple-detail" class="view-section">
+            <div id="temple-detail-hero" class="position-relative text-white py-5" style="background-color: var(--color-maroon-dark); border-bottom: 3px solid var(--color-gold);">
+                <div class="container">
+                    <button onclick="switchView('temples')" class="btn btn-outline-light btn-sm mb-3">
+                        <i class="bi bi-arrow-left"></i> Back to Temples
+                    </button>
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2" id="detail-temple-city"></div>
+                            <h1 class="temple-font text-white mb-2 fs-2" id="detail-temple-name"></h1>
+                            <p class="fs-6 text-light-emphasis mb-3" id="detail-temple-deity"></p>
+                            <div class="d-flex flex-wrap gap-3 small text-white-50">
+                                <span><i class="bi bi-clock text-warning"></i> <span id="detail-temple-timings"></span></span>
+                                <span><i class="bi bi-telephone text-warning"></i> <span id="detail-temple-phone"></span></span>
+                                <span><i class="bi bi-shield-check text-warning"></i> Verified Temple Schedule</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                            <button id="btn-hero-book-darshan" class="btn btn-divine-gold px-4 py-3 fw-bold fs-6 shadow">
+                                <i class="bi bi-ticket-perforated-fill fs-5 me-1"></i> Book Darshan Pass
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- Overview & Dress Code -->
+                        <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                            <h3 class="temple-font fs-5 text-danger mb-3 border-bottom pb-2">
+                                <i class="bi bi-bank me-1"></i> Sacred Sthala Puranam & Architecture
+                            </h3>
+                            <p id="detail-temple-desc" style="line-height: 1.8;"></p>
+                            <div class="alert alert-warning d-flex align-items-start gap-3 mt-4 mb-0">
+                                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning-emphasis flex-shrink-0"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Traditional Devotee Dress Code</h6>
+                                    <small id="detail-temple-dresscode" class="d-block text-dark"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slots Table -->
+                        <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <h3 class="temple-font fs-5 text-danger mb-0">
+                                    <i class="bi bi-calendar2-check me-1"></i> Darshan Timings & Categories
+                                </h3>
+                                <button id="btn-table-book-darshan" class="btn btn-divine-primary btn-sm">Reserve Slot</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle small">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Darshan Slot</th>
+                                            <th>Timings</th>
+                                            <th>General</th>
+                                            <th>Special</th>
+                                            <th>VIP Sheegra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detail-slots-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Poojas -->
+                        <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                            <h3 class="temple-font fs-5 text-danger mb-3 border-bottom pb-2">
+                                <i class="bi bi-fire me-1"></i> Sacred Poojas & Special Sevas
+                            </h3>
+                            <div class="row g-3" id="detail-poojas-row"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                            <h5 class="temple-font text-danger mb-3"><i class="bi bi-geo-alt"></i> Temple Address</h5>
+                            <p class="small text-muted mb-2" id="detail-temple-address"></p>
+                            <div class="p-2 rounded bg-light border text-center small text-muted">
+                                <i class="bi bi-info-circle text-primary me-1"></i> Traditional dhoti/veshti strictly required. Electronic lockers available at outer gopuram.
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-3 text-center" style="background: linear-gradient(135deg, var(--color-maroon) 0%, #360909 100%); color: white;">
+                            <div style="font-size: 2rem;">🪔</div>
+                            <h5 class="temple-font text-warning mb-2">Need Darshan Assistance?</h5>
+                            <p class="small text-light-emphasis mb-3">
+                                Special queues and battery carts available for Senior Citizens and Divyangjan at all major gopuram entrances.
+                            </p>
+                            <button id="btn-sidebar-book-darshan" class="btn btn-warning btn-sm fw-bold w-100">
+                                Book Token Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: DARSHAN BOOKING FORM               -->
+        <!-- ========================================== -->
+        <section id="view-darshan-book" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Darshan E-Token Reservation</div>
+                <h1 class="temple-font text-white mb-1 fs-2" id="book-darshan-temple-title"></h1>
+                <p class="small text-light-emphasis mb-0">Select visit date, timings, category, and enter devotee credentials.</p>
+            </div>
+
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                            <form id="darshan-booking-form-client" onsubmit="event.preventDefault(); submitDarshanBooking();">
+                                
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">1</span> Select Visit Date & Darshan Slot
+                                </h5>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Darshan Date *</label>
+                                        <input type="date" id="darshan-input-date" class="form-control form-control-divine" required onchange="calculateRemainingSlotCapacity()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Select Time Slot *</label>
+                                        <select id="darshan-input-slot" class="form-select form-select-divine" required onchange="calculateRemainingSlotCapacity()"></select>
+                                    </div>
+                                </div>
+
+                                <!-- Live Quota Badge -->
+                                <div id="darshan-live-quota-badge" class="alert alert-success d-flex align-items-center justify-content-between p-2 mb-4">
+                                    <span class="small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Quota Status:</span>
+                                    <span id="darshan-remaining-capacity" class="badge bg-success fs-6">185 tokens remaining for this slot</span>
+                                </div>
+
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">2</span> Ticket Category & Devotees
+                                </h5>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Darshan Category *</label>
+                                        <select id="darshan-input-category" class="form-select form-select-divine" onchange="recalculateDarshanTotal()" required>
+                                            <option value="Free Sarva Darshan" data-price="0">Free Sarva Darshan (₹0)</option>
+                                            <option value="Special Darshan" data-price="100" selected>Special Darshan (₹100)</option>
+                                            <option value="VIP Sheegra Darshan" data-price="300">VIP Sheegra Darshan (₹300)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Number of Devotees *</label>
+                                        <select id="darshan-input-count" class="form-select form-select-divine" onchange="renderDevoteeRows(); recalculateDarshanTotal();" required>
+                                            <option value="1" selected>1 Devotee</option>
+                                            <option value="2">2 Devotees</option>
+                                            <option value="3">3 Devotees</option>
+                                            <option value="4">4 Devotees</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">3</span> Devotee Identity Information
+                                </h5>
+
+                                <div id="devotee-rows-container"></div>
+
+                                <!-- Pricing Summary Box -->
+                                <div class="p-3 rounded-3 border mb-4" style="background: var(--color-sand); border-color: var(--color-gold-border) !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="text-muted small">Price per Devotee:</span>
+                                        <span id="darshan-unit-display" class="fw-semibold">₹100</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-muted small">Devaswom Seva Fee:</span>
+                                        <span class="text-success small">Waived (₹0)</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold fs-6 text-dark">Total Booking Amount:</span>
+                                        <span id="darshan-total-display" class="fw-bold fs-4 text-danger">₹100</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold">
+                                    <i class="bi bi-shield-lock-fill"></i> Proceed to Pay & Generate QR Ticket
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 5: PRINTABLE DIGITAL TICKET PASS      -->
+        <!-- ========================================== -->
+        <section id="view-ticket-view" class="view-section">
+            <div class="container py-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
+                    <button onclick="switchView('dashboard')" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> My Devotee Dashboard
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button onclick="window.print()" class="btn btn-divine-primary btn-sm">
+                            <i class="bi bi-printer-fill"></i> Print / Download PDF
+                        </button>
+                        <button onclick="switchView('temples')" class="btn btn-outline-dark btn-sm">
+                            Book Another Temple
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ticket-container" id="printable-ticket-card">
+                    <div class="ticket-header">
+                        <div class="ticket-gopuram-icon">🛕</div>
+                        <h2 class="temple-font text-white fs-4 mb-1">DivineConnect Sacred E-Pass</h2>
+                        <div class="small text-warning" style="letter-spacing: 1px;">AUTHORIZED TEMPLE DARSHAN TOKEN</div>
+                    </div>
+
+                    <div class="ticket-body">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                            <div>
+                                <h3 class="temple-font text-danger fs-4 mb-1" id="ticket-temple-name"></h3>
+                                <p class="small text-muted mb-0" id="ticket-temple-location"></p>
+                                <p class="small text-muted mb-0" id="ticket-temple-deity"></p>
+                            </div>
+                            <div class="text-md-end">
+                                <span class="ticket-ref-badge" id="ticket-ref-code"></span>
+                                <div class="mt-1">
+                                    <span class="badge bg-success px-3 py-1">Status: Confirmed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 p-3 rounded-3 mb-4" style="background: var(--color-sand); border: 1px solid var(--color-gold-border);">
+                            <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">Darshan Date</small>
+                                <span class="fw-bold text-dark fs-6" id="ticket-date"></span>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">Time Slot</small>
+                                <span class="fw-bold text-danger fs-6" id="ticket-slot"></span>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">Category</small>
+                                <span class="fw-bold text-dark" id="ticket-category"></span>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">Devotees Count</small>
+                                <span class="fw-bold text-dark" id="ticket-count"></span>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-4 g-4">
+                            <div class="col-md-4 text-center">
+                                <div class="ticket-qr-box">
+                                    <div id="ticket-qr-canvas" class="d-flex justify-content-center"></div>
+                                    <small class="d-block text-muted mt-2 fw-bold" style="font-size: 0.7rem;">Scan at Entrance Turnstile</small>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="temple-font text-dark mb-2 border-bottom pb-1">Devotee Information</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered small">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Devotee Name</th>
+                                                <th>Age / Gender</th>
+                                                <th>ID Proof</th>
+                                                <th>ID Number</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ticket-devotees-tbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-2 border bg-light small">
+                            <h6 class="fw-bold text-danger mb-2"><i class="bi bi-info-circle-fill"></i> Important Pilgrimage Guidelines:</h6>
+                            <ul class="mb-0 ps-3 text-muted" style="line-height: 1.7;">
+                                <li>Please report at the queue entrance <strong>15 minutes before</strong> your allotted slot.</li>
+                                <li><strong>Dress code strictly enforced:</strong> Traditional Dhoti/Veshti for Men, Saree/Chudidhar for Women.</li>
+                                <li>Original Government Photo ID declared during reservation must be presented at the gate.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="ticket-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span>Payment Status: <strong class="text-success">Completed</strong></span>
+                        <span id="ticket-issued-at"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 6: POOJA BOOKING FORM                 -->
+        <!-- ========================================== -->
+        <section id="view-pooja-book" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Vedic Pooja & Sankalpam Seva</div>
+                <h1 class="temple-font text-white mb-1 fs-2" id="pooja-book-temple-title"></h1>
+                <p class="small text-light-emphasis mb-0">Perform sacred Archana, Abhishekam, or Kalyanotsavam with family sankalpam.</p>
+            </div>
+
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                            <form id="pooja-form-client" onsubmit="event.preventDefault(); submitPoojaBooking();">
+                                
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">1</span> Select Sacred Pooja
+                                </h5>
+
+                                <div class="mb-4">
+                                    <label class="form-label-divine">Choose Pooja Seva *</label>
+                                    <select id="pooja-select-id" class="form-select form-select-divine" required onchange="handlePoojaChange()"></select>
+                                    <div class="p-3 mt-2 rounded bg-light border small text-muted" id="pooja-info-box"></div>
+                                </div>
+
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">2</span> Date & Auspicious Timing
+                                </h5>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Pooja Date *</label>
+                                        <input type="date" id="pooja-input-date" class="form-control form-control-divine" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Time Slot *</label>
+                                        <select id="pooja-input-slot" class="form-select form-select-divine" required>
+                                            <option value="Morning Ushakkala (07:00 AM - 08:30 AM)">Morning Ushakkala (07:00 AM - 08:30 AM)</option>
+                                            <option value="Forenoon Nitya Pooja (09:30 AM - 11:00 AM)">Forenoon Nitya Pooja (09:30 AM - 11:00 AM)</option>
+                                            <option value="Evening Sayaratchai (05:30 PM - 07:00 PM)">Evening Sayaratchai (05:30 PM - 07:00 PM)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                                    <span class="badge bg-danger rounded-circle me-1">3</span> Devotee Vedic Sankalpam Details
+                                </h5>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Devotee Full Name *</label>
+                                        <input type="text" id="pooja-devotee-name" class="form-control form-control-divine" placeholder="e.g. Sundaramurthy S" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Gothram (Family Lineage)</label>
+                                        <input type="text" id="pooja-gothram" class="form-control form-control-divine" placeholder="e.g. Kashyapa, Bharadwaja" value="Kashyapa">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Birth Star (Nakshatram)</label>
+                                        <select id="pooja-nakshatra" class="form-select form-select-divine">
+                                            <option value="Aswini">Aswini</option>
+                                            <option value="Bharani">Bharani</option>
+                                            <option value="Krittika">Krittika</option>
+                                            <option value="Rohini" selected>Rohini</option>
+                                            <option value="Mrigashiras">Mrigashiras</option>
+                                            <option value="Pushya">Pushya</option>
+                                            <option value="Magha">Magha</option>
+                                            <option value="Hasta">Hasta</option>
+                                            <option value="Swati">Swati</option>
+                                            <option value="Revati">Revati</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-divine">Rasi (Moon Sign)</label>
+                                        <select id="pooja-rasi" class="form-select form-select-divine">
+                                            <option value="Mesham">Mesham (Aries)</option>
+                                            <option value="Rishabham" selected>Rishabham (Taurus)</option>
+                                            <option value="Mithunam">Mithunam (Gemini)</option>
+                                            <option value="Simham">Simham (Leo)</option>
+                                            <option value="Thulam">Thulam (Libra)</option>
+                                            <option value="Dhanusu">Dhanusu (Sagittarius)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label-divine">Prarthana / Wish</label>
+                                        <textarea id="pooja-wish" class="form-control form-control-divine" rows="2" placeholder="e.g. Family peace, health, career prosperity..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 rounded-3 border mb-4" style="background: var(--color-sand); border-color: var(--color-gold-border) !important;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold fs-6 text-dark">Dakshina Seva Fee:</span>
+                                        <span id="pooja-dakshina-total" class="fw-bold fs-4 text-danger">₹0</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold">
+                                    <i class="bi bi-shield-lock-fill"></i> Proceed to Pay & Book Pooja
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 7: POOJA PASS VIEW                   -->
+        <!-- ========================================== -->
+        <section id="view-pooja-pass" class="view-section">
+            <div class="container py-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
+                    <button onclick="switchView('dashboard')" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> My Devotee Dashboard
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button onclick="window.print()" class="btn btn-divine-primary btn-sm">
+                            <i class="bi bi-printer-fill"></i> Print / Download PDF
+                        </button>
+                        <button onclick="switchView('temples')" class="btn btn-outline-dark btn-sm">
+                            Explore More Sevas
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ticket-container">
+                    <div class="ticket-header">
+                        <div class="ticket-gopuram-icon">🪔</div>
+                        <h2 class="temple-font text-white fs-4 mb-1">DivineConnect Sacred Pooja Pass</h2>
+                        <div class="small text-warning" style="letter-spacing: 1px;">VEDIC SANKALPAM TOKEN</div>
+                    </div>
+
+                    <div class="ticket-body">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                            <div>
+                                <span class="badge bg-danger mb-1" id="pass-pooja-name"></span>
+                                <h3 class="temple-font text-danger fs-4 mb-1" id="pass-temple-name"></h3>
+                                <p class="small text-muted mb-0" id="pass-temple-deity"></p>
+                            </div>
+                            <div class="text-md-end">
+                                <span class="ticket-ref-badge" id="pass-ref-code"></span>
+                                <div class="mt-1">
+                                    <span class="badge bg-success px-3 py-1">Seva Confirmed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 p-3 rounded-3 mb-4" style="background: var(--color-sand); border: 1px solid var(--color-gold-border);">
+                            <div class="col-md-4 col-6">
+                                <small class="text-muted d-block">Pooja Date</small>
+                                <span class="fw-bold text-dark fs-6" id="pass-date"></span>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <small class="text-muted d-block">Time Slot</small>
+                                <span class="fw-bold text-danger fs-6" id="pass-slot"></span>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <small class="text-muted d-block">Dakshina Fee</small>
+                                <span class="fw-bold text-dark fs-5" id="pass-amount"></span>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-4 g-4">
+                            <div class="col-md-4 text-center">
+                                <div class="ticket-qr-box">
+                                    <div id="pass-qr-canvas" class="d-flex justify-content-center"></div>
+                                    <small class="d-block text-muted mt-2 fw-bold" style="font-size: 0.7rem;">Priest Verification Code</small>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="temple-font text-dark mb-2 border-bottom pb-1">Vedic Sankalpam Particulars</h6>
+                                <table class="table table-sm table-bordered small">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 35%; background: #FAF5EB;">Devotee / Karta Name</th>
+                                            <td class="fw-bold" id="pass-devotee-name"></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="background: #FAF5EB;">Gothram</th>
+                                            <td id="pass-gothram"></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="background: #FAF5EB;">Birth Star (Nakshatra)</th>
+                                            <td id="pass-nakshatra"></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="background: #FAF5EB;">Rasi (Moon Sign)</th>
+                                            <td id="pass-rasi"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-2 border bg-light small">
+                            <h6 class="fw-bold text-danger mb-1"><i class="bi bi-gift-fill"></i> Sacred Prasadam Collection:</h6>
+                            <p class="mb-0 text-muted">The blessed archana flowers, holy vibhuti, kumkum and prasadam packet will be consecrated in the sanctum during the scheduled ritual.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 8: POOJA STORE                        -->
+        <!-- ========================================== -->
+        <section id="view-store" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Sacred Devotional Samagri</div>
+                <h1 class="temple-font text-white mb-2 fs-2">Online Pooja Store</h1>
+                <p class="small text-light-emphasis mb-0">Fresh Madurai malli garlands, sacred brass deepams, pure Bhimseni camphor, and daily pooja kits.</p>
+            </div>
+            <div class="container py-4">
+                <div class="row g-4" id="store-products-grid"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 9: TEMPLE PRASADAM                     -->
+        <!-- ========================================== -->
+        <section id="view-prasadam" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Sacred Temple Offerings</div>
+                <h1 class="temple-font text-white mb-2 fs-2">Temple Prasadam Online</h1>
+                <p class="small text-light-emphasis mb-0">Consecrated Tirupati Laddus, Palani Panchamirtham, Madurai Puliyodarai & Kovil Sakkarai Pongal.</p>
+            </div>
+            <div class="container py-4">
+                <div class="row g-4" id="prasadams-grid"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 10: CART & CHECKOUT                   -->
+        <!-- ========================================== -->
+        <section id="view-cart" class="view-section">
+            <div class="py-4 text-center text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <h1 class="temple-font text-white mb-1 fs-2">Your Devotional Cart</h1>
+                <p class="small text-light-emphasis mb-0">Review sacred pooja items and consecrated temple prasadams.</p>
+            </div>
+            <div class="container py-5">
+                <div id="cart-content-container"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 11: DEVOTEE DASHBOARD                 -->
+        <!-- ========================================== -->
+        <section id="view-dashboard" class="view-section">
+            <div class="py-4 text-white" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%);">
+                <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-1">Devotee Member Portal</span>
+                        <h1 class="temple-font text-white mb-0 fs-2" id="dash-user-name">Sundaramurthy Swaminathan</h1>
+                        <small class="text-light-emphasis" id="dash-user-email">devotee@divineconnect.com</small>
+                    </div>
+                    <div id="dash-admin-pill" style="display: none;">
+                        <button onclick="switchView('admin')" class="btn btn-warning fw-bold">
+                            <i class="bi bi-shield-lock-fill"></i> Open Admin Portal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-maroon);">🛕</div>
+                            <div>
+                                <h3 class="fw-bold mb-0 text-dark" id="dash-stat-darshans">0</h3>
+                                <small class="text-muted">Darshan Passes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-saffron);">🪔</div>
+                            <div>
+                                <h3 class="fw-bold mb-0 text-dark" id="dash-stat-poojas">0</h3>
+                                <small class="text-muted">Pooja Sevas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-gold);">🍯</div>
+                            <div>
+                                <h3 class="fw-bold mb-0 text-dark" id="dash-stat-orders">0</h3>
+                                <small class="text-muted">Store & Prasadam Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Darshan Tickets Table -->
+                <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                    <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Your Darshan Passes</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Booking Ref</th>
+                                    <th>Temple</th>
+                                    <th>Date & Slot</th>
+                                    <th>Category</th>
+                                    <th>Devotees</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-darshans-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pooja Bookings Table -->
+                <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                    <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Your Pooja Sevas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Booking Ref</th>
+                                    <th>Pooja Name</th>
+                                    <th>Temple</th>
+                                    <th>Date & Slot</th>
+                                    <th>Devotee Sankalpam</th>
+                                    <th>Dakshina</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-poojas-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Store Orders Table -->
+                <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                    <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Store & Prasadam Orders</h5>
+                    <div id="dash-orders-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 12: ADMIN PORTAL                      -->
+        <!-- ========================================== -->
+        <section id="view-admin" class="view-section">
+            <div class="py-4 text-white" style="background: linear-gradient(135deg, #1A0505 0%, #3B0A0A 100%); border-bottom: 3px solid var(--color-gold);">
+                <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-1">
+                            <i class="bi bi-shield-lock-fill"></i> Central Devaswom Administration
+                        </span>
+                        <h1 class="temple-font text-white mb-0 fs-3">Admin Control Portal</h1>
+                    </div>
+                    <button onclick="switchView('home')" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-box-arrow-up-right"></i> View Devotee Website
+                    </button>
+                </div>
+            </div>
+
+            <div class="container py-4">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm" style="border-left: 5px solid #2E7D32 !important;">
+                            <small class="text-muted text-uppercase fw-bold">Platform Revenue</small>
+                            <h3 class="fw-bold text-success mb-0 fs-4" id="admin-total-revenue">₹12,450</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm" style="border-left: 5px solid var(--color-maroon) !important;">
+                            <small class="text-muted text-uppercase fw-bold">Darshan Tokens</small>
+                            <h3 class="fw-bold text-danger mb-0 fs-4" id="admin-darshan-count">18</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm" style="border-left: 5px solid var(--color-saffron) !important;">
+                            <small class="text-muted text-uppercase fw-bold">Pooja Sevas</small>
+                            <h3 class="fw-bold mb-0 fs-4" style="color: var(--color-saffron);" id="admin-pooja-count">12</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm" style="border-left: 5px solid var(--color-gold) !important;">
+                            <small class="text-muted text-uppercase fw-bold">Store / Prasad</small>
+                            <h3 class="fw-bold text-dark mb-0 fs-4" id="admin-orders-count">8</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-3 border shadow-sm mb-4">
+                    <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Recent Darshan Tokens & Gate Entry Verification</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ref</th>
+                                    <th>Temple</th>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Devotees</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-darshan-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Traditional Devotional Footer -->
+    <footer class="footer-divine">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="brand-logo-icon">
+                            <i class="bi bi-bank2"></i>
+                        </div>
+                        <h4 class="brand-title text-white m-0">DivineConnect</h4>
+                    </div>
+                    <p class="small text-light-emphasis" style="line-height: 1.7;">
+                        A unified devotional ecosystem bridging devotees worldwide with sacred South Indian temples. Hassle-free online Darshan token reservations, sacred Vedic pooja bookings, pure temple prasadams, and puja store items delivered with utmost sanctity.
+                    </p>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <h5 class="temple-font text-warning mb-3 fs-6">Quick Links</h5>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="javascript:void(0)" onclick="switchView('home')">Home Page</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('temples')">All Temples</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('store')">Online Pooja Store</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('prasadam')">Temple Prasadam</a></li>
+                        <li><a href="javascript:void(0)" onclick="openLoginModal()">Devotee Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <h5 class="temple-font text-warning mb-3 fs-6">Devotee Helpdesk</h5>
+                    <p class="small text-light-emphasis mb-1"><i class="bi bi-telephone-fill text-warning me-2"></i> 1800-425-DIVINE (Toll Free)</p>
+                    <p class="small text-light-emphasis mb-2"><i class="bi bi-envelope-fill text-warning me-2"></i> support@divineconnect.demo</p>
+                    <p class="small text-light-emphasis mb-0"><i class="bi bi-geo-alt-fill text-warning me-2"></i> Temple Seva Bhavan, Anna Salai, Chennai, Tamil Nadu 600002</p>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 small text-secondary">
+                <div>&copy; 2026 DivineConnect. All rights reserved. Blessed for all devotees.</div>
+                <div>Demonstration Pilgrimage Platform • Powered by GitHub Pages</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-warning shadow-lg" style="border-radius: 16px;">
+                <div class="modal-body p-4 text-center">
+                    <div class="brand-logo-icon mx-auto mb-2">
+                        <i class="bi bi-bank2"></i>
+                    </div>
+                    <h3 class="temple-font text-danger mb-1">Namaskaram</h3>
+                    <p class="text-muted small mb-4">Sign in to manage your Darshan tokens, Pooja bookings & orders.</p>
+
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <button class="btn btn-divine-primary py-2 fw-bold" onclick="loginAs('devotee')">
+                            <i class="bi bi-person-fill"></i> 1-Click Devotee Sign In
+                        </button>
+                        <button class="btn btn-outline-dark py-2 fw-bold" onclick="loginAs('admin')">
+                            <i class="bi bi-shield-lock-fill"></i> 1-Click Admin Sign In
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-link text-muted" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/main.js"></script>
+    <script src="static/js/payment.js"></script>
+    <script src="static/js/pages_app.js"></script>
+</body>
+</html>
