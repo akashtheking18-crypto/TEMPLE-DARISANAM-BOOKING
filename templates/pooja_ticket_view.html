@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Pooja Sankalpam Pass – {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Action Controls (Hidden on Print) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> My Devotee Dashboard
+        </a>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-divine-primary btn-sm">
+                <i class="bi bi-printer-fill"></i> Print / Download PDF
+            </button>
+            <a href="{{ url_for('temples') }}" class="btn btn-outline-dark btn-sm">
+                Explore More Sevas
+            </a>
+        </div>
+    </div>
+
+    <!-- Sacred Printable Pooja Pass Card -->
+    <div class="ticket-container">
+        <!-- Header -->
+        <div class="ticket-header">
+            <div class="ticket-gopuram-icon">🪔</div>
+            <h2 class="temple-font text-white fs-4 mb-1">DivineConnect Sacred Pooja Pass</h2>
+            <div class="small text-warning" style="letter-spacing: 1px;">VEDIC SANKALPAM TOKEN</div>
+        </div>
+
+        <!-- Body -->
+        <div class="ticket-body">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                <div>
+                    <span class="badge bg-danger mb-1">{{ booking.pooja.name }}</span>
+                    <h3 class="temple-font text-danger fs-4 mb-1">{{ booking.temple.name }}</h3>
+                    <p class="small text-muted mb-0"><i class="bi bi-geo-alt-fill text-danger"></i> {{ booking.temple.city }}, {{ booking.temple.state }}</p>
+                    <p class="small text-muted mb-0"><strong>Presiding Deity:</strong> {{ booking.pooja.deity }}</p>
+                </div>
+                <div class="text-md-end">
+                    <span class="ticket-ref-badge">{{ booking.booking_reference }}</span>
+                    <div class="mt-1">
+                        <span class="badge bg-success px-3 py-1">Seva Confirmed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pooja Specifications Grid -->
+            <div class="row g-3 p-3 rounded-3 mb-4" style="background: var(--color-sand); border: 1px solid var(--color-gold-border);">
+                <div class="col-md-4 col-6">
+                    <small class="text-muted d-block">Pooja Date</small>
+                    <span class="fw-bold text-dark fs-6">{{ booking.pooja_date.strftime('%A, %d %B %Y') }}</span>
+                </div>
+                <div class="col-md-4 col-6">
+                    <small class="text-muted d-block">Auspicious Time Slot</small>
+                    <span class="fw-bold text-danger fs-6">{{ booking.time_slot }}</span>
+                </div>
+                <div class="col-md-4 col-12">
+                    <small class="text-muted d-block">Seva Dakshina Amount</small>
+                    <span class="fw-bold text-dark fs-5">₹{{ booking.total_amount }} (Paid)</span>
+                </div>
+            </div>
+
+            <div class="row align-items-center mb-4 g-4">
+                <!-- QR Code Box -->
+                <div class="col-md-4 text-center">
+                    <div class="ticket-qr-box">
+                        {% if booking.qr_code_base64 %}
+                        <img src="{{ booking.qr_code_base64 }}" alt="Pooja QR Code" class="img-fluid">
+                        {% endif %}
+                        <small class="d-block text-muted mt-1 fw-bold" style="font-size: 0.7rem;">Priest Verification Code</small>
+                    </div>
+                </div>
+
+                <!-- Devotee & Sankalpam Details -->
+                <div class="col-md-8">
+                    <h6 class="temple-font text-dark mb-2 border-bottom pb-1">Vedic Sankalpam Particulars</h6>
+                    <table class="table table-sm table-bordered small">
+                        <tbody>
+                            <tr>
+                                <th style="width: 35%; background: #FAF5EB;">Devotee / Karta Name</th>
+                                <td class="fw-bold">{{ booking.devotee_name }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: #FAF5EB;">Gothram</th>
+                                <td>{{ booking.gothra or 'Shiva/Kashyapa Gothram' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: #FAF5EB;">Birth Star (Nakshatra)</th>
+                                <td>{{ booking.nakshatra or 'Devotee Nakshatram' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: #FAF5EB;">Rasi (Moon Sign)</th>
+                                <td>{{ booking.rasi or 'Devotee Rasi' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: #FAF5EB;">Prarthana / Wish</th>
+                                <td>{{ booking.sankalpam_wish or 'Universal Peace, Health, Family Well-being & Prosperity' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Prasad Collection Instruction -->
+            <div class="p-3 rounded-2 border bg-light small">
+                <h6 class="fw-bold text-danger mb-2"><i class="bi bi-gift-fill"></i> Sacred Prasadam Collection:</h6>
+                <p class="mb-0 text-muted" style="line-height: 1.7;">
+                    The archana flowers, holy vibhuti, kumkum, and temple prasadam will be blessed in the deity's presence during the scheduled ritual. Devotees attending physically can collect directly from the Archana counter showing this QR code, or have it dispatched via postal seva if ordered.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="ticket-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>Payment Status: <strong class="text-success">{{ booking.payment_status }}</strong> (Txn: {{ booking.payment_id }})</span>
+            <span>Issued on: {{ booking.created_at.strftime('%d-%b-%Y %I:%M %p') }} IST</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

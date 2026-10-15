@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Devotee Registration – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                
+                <div class="text-center mb-4">
+                    <div class="brand-logo-icon mx-auto mb-2">
+                        <i class="bi bi-bank2"></i>
+                    </div>
+                    <h3 class="temple-font text-danger mb-1">Create Devotee Account</h3>
+                    <p class="text-muted small">Join DivineConnect to easily book darshan, sacred poojas and order authentic prasadams.</p>
+                </div>
+
+                <form action="{{ url_for('register') }}" method="POST">
+                    <!-- Basic Information -->
+                    <h6 class="temple-font text-danger border-bottom pb-1 mb-3">Devotee Information</h6>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Full Name *</label>
+                            <input type="text" name="name" class="form-control form-control-divine" placeholder="e.g. Sundaramurthy S" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Email Address *</label>
+                            <input type="email" name="email" class="form-control form-control-divine" placeholder="name@example.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Password *</label>
+                            <input type="password" name="password" class="form-control form-control-divine" placeholder="Create a secure password" minlength="6" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Confirm Password *</label>
+                            <input type="password" name="confirm_password" class="form-control form-control-divine" placeholder="Confirm your password" minlength="6" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Mobile Phone Number *</label>
+                            <input type="tel" name="phone" class="form-control form-control-divine" placeholder="10-digit mobile number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">City</label>
+                            <input type="text" name="city" class="form-control form-control-divine" placeholder="e.g. Madurai, Chennai, Bangalore">
+                        </div>
+                    </div>
+
+                    <!-- Vedic Profile (Optional) -->
+                    <h6 class="temple-font text-danger border-bottom pb-1 mb-3 mt-4">Vedic Sankalpam Profile (Optional)</h6>
+                    <p class="small text-muted mb-3">Saving these details will auto-fill your sacred pooja sankalpam forms.</p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Nakshatram (Birth Star)</label>
+                            <select name="nakshatra" class="form-select form-select-divine">
+                                <option value="">Select Nakshatra</option>
+                                {% for n in nakshatras %}
+                                <option value="{{ n }}">{{ n }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Rasi (Moon Sign)</label>
+                            <select name="rasi" class="form-select form-select-divine">
+                                <option value="">Select Rasi</option>
+                                <option value="Mesham">Mesham (Aries)</option>
+                                <option value="Rishabham">Rishabham (Taurus)</option>
+                                <option value="Mithunam">Mithunam (Gemini)</option>
+                                <option value="Karkatakam">Karkatakam (Cancer)</option>
+                                <option value="Simham">Simham (Leo)</option>
+                                <option value="Kanya">Kanya (Virgo)</option>
+                                <option value="Thulam">Thulam (Libra)</option>
+                                <option value="Vrischikam">Vrischikam (Scorpio)</option>
+                                <option value="Dhanusu">Dhanusu (Sagittarius)</option>
+                                <option value="Makaram">Makaram (Capricorn)</option>
+                                <option value="Kumbham">Kumbham (Aquarius)</option>
+                                <option value="Meenam">Meenam (Pisces)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Gothram</label>
+                            <input type="text" name="gothra" class="form-control form-control-divine" placeholder="e.g. Kashyapa, Bharadwaja">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold mb-3">
+                        Register Account
+                    </button>
+
+                    <div class="text-center small text-muted">
+                        Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-danger fw-bold text-decoration-none">Sign in here</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

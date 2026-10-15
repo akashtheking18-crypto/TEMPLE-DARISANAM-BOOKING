@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed – {{ order.order_reference }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                
+                <!-- Success Header -->
+                <div class="text-center mb-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 75px; height: 75px; background: #E8F5E9; border: 3px solid #2E7D32; font-size: 2.2rem; color: #2E7D32;">
+                        ✓
+                    </div>
+                    <h2 class="temple-font text-danger mb-1">Devotional Order Confirmed!</h2>
+                    <p class="text-muted small">Your sacred offerings are being prepared with utmost devotion and sanctity.</p>
+                    <div class="badge bg-warning text-dark px-3 py-2 fs-6 fw-bold">
+                        Order Ref: {{ order.order_reference }}
+                    </div>
+                </div>
+
+                <!-- Order Status Live Timeline -->
+                <div class="p-3 rounded-3 mb-4" style="background: var(--color-sand); border: 1px solid var(--color-gold-border);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-dark">Fulfillment Status:</span>
+                        <span class="badge bg-success">{{ order.order_status }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center text-center position-relative my-3">
+                        <div class="flex-fill">
+                            <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">✓</div>
+                            <div class="small fw-semibold mt-1">Confirmed</div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="rounded-circle bg-warning text-dark d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">🪔</div>
+                            <div class="small fw-semibold mt-1">Preparing</div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">🚚</div>
+                            <div class="small text-muted mt-1">Dispatched</div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">🎁</div>
+                            <div class="small text-muted mt-1">Delivered</div>
+                        </div>
+                    </div>
+                    <div class="small text-muted text-center">
+                        <i class="bi bi-upc-scan"></i> Tracking Number: <code>{{ order.tracking_number }}</code>
+                    </div>
+                </div>
+
+                <!-- Shipping / Pickup Info -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-2 h-100 bg-light small">
+                            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-geo-alt-fill text-danger"></i> Delivery Details:</h6>
+                            <p class="mb-1"><strong>Recipient:</strong> {{ order.shipping_name }}</p>
+                            <p class="mb-1"><strong>Contact Phone:</strong> {{ order.shipping_phone }}</p>
+                            <p class="mb-0"><strong>Address:</strong> {{ order.shipping_address }}, {{ order.shipping_city }} - {{ order.shipping_pincode }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-2 h-100 bg-light small">
+                            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-credit-card text-danger"></i> Payment Summary:</h6>
+                            <p class="mb-1"><strong>Payment Status:</strong> <span class="text-success fw-bold">{{ order.payment_status }}</span></p>
+                            <p class="mb-1"><strong>Transaction ID:</strong> <code>{{ order.payment_id }}</code></p>
+                            <p class="mb-0"><strong>Order Date:</strong> {{ order.created_at.strftime('%d %B %Y, %I:%M %p') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Ordered Table -->
+                <h6 class="temple-font text-dark mb-2 border-bottom pb-1">Items in this Sacred Order</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item Description</th>
+                                <th class="text-center">Type</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td class="fw-bold">{{ item.item_name }}</td>
+                                <td class="text-center"><span class="badge bg-light text-dark border">{{ item.item_type|capitalize }}</span></td>
+                                <td class="text-end">₹{{ item.unit_price }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end fw-bold">₹{{ item.subtotal }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="table-light">
+                                <td colspan="4" class="text-end fw-bold">Grand Total Paid:</td>
+                                <td class="text-end fw-bold text-danger fs-6">₹{{ order.total_amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline-danger">
+                        <i class="bi bi-speedometer2"></i> View in My Dashboard
+                    </a>
+                    <button onclick="window.print()" class="btn btn-divine-primary">
+                        <i class="bi bi-printer"></i> Print Devotional Receipt
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

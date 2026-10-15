@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Sacred Temples Directory – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container text-center">
+        <h1 class="temple-font text-white mb-2">Sacred South Indian Temples</h1>
+        <p class="small text-light-emphasis mb-0">
+            Discover historic kshetrams, temple timings, dress codes, and reserve authorized darshan slots & poojas.
+        </p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Filters & Search Toolbar -->
+    <div class="p-3 mb-4 rounded-3 border shadow-sm" style="background: #FFFDF9; border-color: var(--color-gold-border) !important;">
+        <form action="{{ url_for('temples') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-danger"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-divine border-start-0" placeholder="Search by name, deity, or place...">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-6">
+                <select name="city" class="form-select form-select-divine">
+                    <option value="">All Cities</option>
+                    {% for c in all_cities %}
+                    <option value="{{ c }}" {{ 'selected' if city_filter == c }}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-6">
+                <select name="state" class="form-select form-select-divine">
+                    <option value="">All States</option>
+                    {% for s in all_states %}
+                    <option value="{{ s }}" {{ 'selected' if state_filter == s }}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-12 d-flex gap-2">
+                <button type="submit" class="btn btn-divine-primary flex-fill">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                {% if search_query or city_filter or state_filter or deity_filter %}
+                <a href="{{ url_for('temples') }}" class="btn btn-outline-secondary" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters Badge Display -->
+    {% if search_query or city_filter or state_filter or deity_filter %}
+    <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+        <span class="small text-muted">Showing results for:</span>
+        {% if search_query %}<span class="badge bg-danger-subtle text-danger">Keyword: "{{ search_query }}"</span>{% endif %}
+        {% if city_filter %}<span class="badge bg-warning-subtle text-dark">City: {{ city_filter }}</span>{% endif %}
+        {% if state_filter %}<span class="badge bg-warning-subtle text-dark">State: {{ state_filter }}</span>{% endif %}
+        <span class="text-muted small">({{ temples|length }} temples found)</span>
+    </div>
+    {% endif %}
+
+    <!-- Temple Cards Grid -->
+    {% if temples %}
+    <div class="row g-4">
+        {% for temple in temples %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card-divine">
+                <div class="card-divine-img-wrap">
+                    <img src="{{ temple.image_url }}" alt="{{ temple.name }}" loading="lazy">
+                    <span class="card-tag"><i class="bi bi-clock"></i> {{ temple.opening_time }} - {{ temple.closing_time }}</span>
+                </div>
+                <div class="card-divine-body">
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt-fill"></i> {{ temple.city }}, {{ temple.state }}
+                    </div>
+                    <h4 class="card-divine-title">{{ temple.name }}</h4>
+                    <div class="card-deity">
+                        <strong>Pradhana Deity:</strong> {{ temple.deity }}
+                    </div>
+                    <p class="small text-muted mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ temple.description }}
+                    </p>
+                    <div class="d-flex gap-2 pt-2 border-top">
+                        <a href="{{ url_for('temple_detail', temple_id=temple.id) }}" class="btn btn-divine-outline flex-fill small py-2">
+                            <i class="bi bi-info-circle"></i> View Details
+                        </a>
+                        <a href="{{ url_for('darshan_book', temple_id=temple.id) }}" class="btn btn-divine-primary flex-fill small py-2">
+                            <i class="bi bi-ticket-perforated"></i> Book Darshan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-4 bg-white rounded-3 border">
+        <div style="font-size: 3rem;">🛕</div>
+        <h4 class="temple-font mt-2">No Temples Match Your Search</h4>
+        <p class="text-muted small">Try searching for other keywords like "Madurai", "Shiva", "Murugan", or clear filters.</p>
+        <a href="{{ url_for('temples') }}" class="btn btn-divine-primary px-4 py-2 mt-2">
+            View All Temples
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ temple.name }} – Darshan, Poojas & Prasadam{% endblock %}
+
+{% block content %}
+<!-- Temple Banner & Title Header -->
+<div class="position-relative" style="background: linear-gradient(rgba(42, 26, 23, 0.75), rgba(74, 14, 14, 0.9)), url('{{ temple.banner_url or temple.image_url }}') center/cover no-repeat; color: white; padding: 60px 0 45px; border-bottom: 3px solid var(--color-gold);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small text-white-50">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-white-50">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('temples') }}" class="text-white-50">Temples</a></li>
+                        <li class="breadcrumb-item active text-warning" aria-current="page">{{ temple.city }}</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">
+                    <i class="bi bi-geo-alt-fill"></i> {{ temple.city }}, {{ temple.state }}
+                </div>
+                <h1 class="temple-font text-white mb-2 fs-2">{{ temple.name }}</h1>
+                <p class="fs-6 text-light-emphasis mb-3">
+                    <strong>Pradhana Deity:</strong> {{ temple.deity }}
+                </p>
+                <div class="d-flex flex-wrap gap-3 small text-white-50">
+                    <span><i class="bi bi-clock text-warning"></i> {{ temple.opening_time }} – {{ temple.closing_time }}</span>
+                    <span><i class="bi bi-telephone text-warning"></i> {{ temple.contact_phone or '1800-425-DIVINE' }}</span>
+                    <span><i class="bi bi-shield-check text-warning"></i> Verified Temple Schedule</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <a href="{{ url_for('darshan_book', temple_id=temple.id) }}" class="btn btn-divine-gold px-4 py-3 fw-bold fs-6 shadow">
+                    <i class="bi bi-ticket-perforated-fill fs-5 me-1"></i> Book Darshan Pass
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <!-- Temple Overview & History -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                <h3 class="temple-font fs-5 text-danger mb-3 border-bottom pb-2">
+                    <i class="bi bi-bank me-1"></i> Sacred Sthala Puranam & Architecture
+                </h3>
+                <p style="line-height: 1.8;">{{ temple.description }}</p>
+                {% if temple.history %}
+                <div class="p-3 rounded-2 bg-light border-start border-4 border-warning my-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-book me-1 text-danger"></i> Historical Legacy:</h6>
+                    <p class="small text-muted mb-0" style="line-height: 1.7;">{{ temple.history }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Dress Code Alert -->
+                <div class="alert alert-warning d-flex align-items-start gap-3 mt-4 mb-0">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 text-warning-emphasis flex-shrink-0"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">Traditional Devotee Dress Code</h6>
+                        <small class="d-block text-dark">{{ temple.dress_code }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Darshan Slots Table -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h3 class="temple-font fs-5 text-danger mb-0">
+                        <i class="bi bi-calendar2-check me-1"></i> Available Darshan Timings & Categories
+                    </h3>
+                    <a href="{{ url_for('darshan_book', temple_id=temple.id) }}" class="btn btn-divine-primary btn-sm">
+                        Reserve Slot
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr class="small text-muted">
+                                <th>Darshan Slot</th>
+                                <th>Timings</th>
+                                <th>General (Sarva)</th>
+                                <th>Special</th>
+                                <th>VIP Sheegra</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in slots %}
+                            <tr>
+                                <td class="fw-bold text-dark">{{ slot.slot_name }}</td>
+                                <td><span class="badge bg-light text-dark border">{{ slot.start_time }} - {{ slot.end_time }}</span></td>
+                                <td class="text-success fw-semibold">Free</td>
+                                <td class="text-danger fw-bold">₹{{ slot.price_special }}</td>
+                                <td class="text-primary fw-bold">₹{{ slot.price_vip }}</td>
+                                <td>
+                                    <a href="{{ url_for('darshan_book', temple_id=temple.id) }}" class="btn btn-outline-danger btn-sm">
+                                        Select
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">No active darshan slots published at this moment.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Special Poojas Section -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" id="poojas" style="border-color: var(--color-gold-border) !important;">
+                <h3 class="temple-font fs-5 text-danger mb-3 border-bottom pb-2">
+                    <i class="bi bi-fire me-1"></i> Sacred Poojas & Special Sevas
+                </h3>
+                <div class="row g-3">
+                    {% for pooja in poojas %}
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 d-flex flex-column" style="background: var(--color-cream); border-color: var(--color-gold-border) !important;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold text-dark fs-6 mb-0">{{ pooja.name }}</h5>
+                                <span class="badge bg-danger fs-6">₹{{ pooja.price }}</span>
+                            </div>
+                            <div class="small text-muted mb-2"><i class="bi bi-person-heart text-danger"></i> Deity: {{ pooja.deity }}</div>
+                            <p class="small text-muted mb-3 flex-grow-1">{{ pooja.description }}</p>
+                            <div class="small bg-white p-2 rounded border mb-3">
+                                <strong>Includes:</strong> {{ pooja.items_included }}
+                            </div>
+                            <a href="{{ url_for('pooja_book', temple_id=temple.id, pooja_id=pooja.id) }}" class="btn btn-divine-primary btn-sm w-100">
+                                <i class="bi bi-pencil-square"></i> Book Sankalpam Pooja
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">No special poojas currently listed.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Devotee Reviews & Feedback -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h3 class="temple-font fs-5 text-danger mb-0">
+                        <i class="bi bi-chat-heart me-1"></i> Devotee Experiences & Reviews
+                    </h3>
+                    <span class="badge bg-warning text-dark">{{ reviews|length }} Reviews</span>
+                </div>
+
+                <!-- Review Form -->
+                {% if current_user %}
+                <form action="{{ url_for('add_temple_review', temple_id=temple.id) }}" method="POST" class="p-3 rounded-3 bg-light border mb-4">
+                    <h6 class="fw-bold text-dark mb-2">Share Your Pilgrimage Experience</h6>
+                    <div class="row g-2 align-items-center mb-2">
+                        <div class="col-auto">
+                            <label class="form-label-divine small mb-0">Devotional Rating:</label>
+                        </div>
+                        <div class="col-auto">
+                            <select name="rating" class="form-select form-select-sm">
+                                <option value="5">⭐⭐⭐⭐⭐ Divine (5/5)</option>
+                                <option value="4">⭐⭐⭐⭐ Very Good (4/5)</option>
+                                <option value="3">⭐⭐⭐ Good (3/5)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <textarea name="comment" class="form-control form-control-sm" rows="2" placeholder="Write about your darshan, crowd management, or temple sanctity..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-divine-primary btn-sm">
+                        Submit Devotional Review
+                    </button>
+                </form>
+                {% else %}
+                <div class="p-3 bg-light rounded text-center small mb-4">
+                    <a href="{{ url_for('login') }}" class="fw-bold text-danger">Sign in</a> to leave your sacred pilgrimage review.
+                </div>
+                {% endif %}
+
+                <!-- Existing Reviews List -->
+                <div class="d-flex flex-column gap-3">
+                    {% for rev in reviews %}
+                    <div class="p-3 border rounded-2" style="background: var(--color-cream-light);">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark">{{ rev.user_name }}</span>
+                            <span class="text-warning">
+                                {% for i in range(rev.rating) %}⭐{% endfor %}
+                            </span>
+                        </div>
+                        <p class="small text-muted mb-1">{{ rev.comment }}</p>
+                        <small class="text-secondary" style="font-size: 0.75rem;">{{ rev.created_at.strftime('%d %B, %Y') }}</small>
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">Be the first devotee to share a review for this sacred shrine!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Temple Address Card -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3"><i class="bi bi-geo-alt"></i> Temple Address</h5>
+                <p class="small text-muted mb-2">
+                    <strong>Address:</strong><br>{{ temple.address }}
+                </p>
+                <p class="small text-muted mb-2">
+                    <strong>Devaswom Phone:</strong><br>{{ temple.contact_phone or '1800-425-DIVINE' }}
+                </p>
+                <p class="small text-muted mb-3">
+                    <strong>Official Email:</strong><br>{{ temple.contact_email or 'darshan@temple.demo' }}
+                </p>
+                <div class="p-2 rounded bg-light border text-center small text-muted">
+                    <i class="bi bi-info-circle text-primary me-1"></i> Shoes/Electronic lockers available at Entrance Gopuram.
+                </div>
+            </div>
+
+            <!-- Authentic Prasadams at this Temple -->
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3"><i class="bi bi-basket2"></i> Consecrated Prasadam</h5>
+                <div class="d-flex flex-column gap-3">
+                    {% for pr in prasadams %}
+                    <div class="p-3 border rounded-3 d-flex align-items-center gap-3" style="background: var(--color-cream-light);">
+                        <img src="{{ pr.image_url }}" alt="{{ pr.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-0 text-dark small">{{ pr.name }}</h6>
+                            <span class="text-danger fw-bold fs-6">₹{{ pr.price }}</span>
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">{{ pr.weight_grams }}g • Shelf life: {{ pr.expiry_days }}d</small>
+                        </div>
+                        <button onclick="addToCart('prasadam', {{ pr.id }}, 1)" class="btn btn-outline-danger btn-sm" title="Add to Sacred Cart">
+                            <i class="bi bi-cart-plus"></i>
+                        </button>
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">No prasadams currently listed for online dispatch.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Quick Action Box -->
+            <div class="p-4 rounded-3 text-center" style="background: linear-gradient(135deg, var(--color-maroon) 0%, #360909 100%); color: white;">
+                <div style="font-size: 2rem;">🪔</div>
+                <h5 class="temple-font text-warning mb-2">Need Darshan Assistance?</h5>
+                <p class="small text-light-emphasis mb-3">
+                    Special queues and battery carts available for Senior Citizens and Divyangjan at all major gopuram entrances.
+                </p>
+                <a href="{{ url_for('darshan_book', temple_id=temple.id) }}" class="btn btn-warning btn-sm fw-bold w-100">
+                    Book Token Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

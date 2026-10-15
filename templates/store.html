@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Online Pooja Items Store – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container text-center">
+        <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Sacred Devotional Samagri</div>
+        <h1 class="temple-font text-white mb-2 fs-2">Online Pooja Store</h1>
+        <p class="small text-light-emphasis mb-0">
+            Fresh Madurai malli garlands, sacred brass deepams, pure Bhimseni camphor, organic chandan, and complete nitya pooja kits.
+        </p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Search & Category Filter Bar -->
+    <div class="p-3 mb-4 rounded-3 border shadow-sm" style="background: #FFFDF9; border-color: var(--color-gold-border) !important;">
+        <form action="{{ url_for('store') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-danger"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" value="{{ search }}" class="form-control form-control-divine border-start-0" placeholder="Search pooja items, diya, camphor, garland...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select form-select-divine" onchange="this.form.submit()">
+                    <option value="">All Sacred Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {{ 'selected' if selected_category == cat }}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-divine-primary w-100">
+                    <i class="bi bi-funnel"></i> Search
+                </button>
+                {% if search or selected_category %}
+                <a href="{{ url_for('store') }}" class="btn btn-outline-secondary" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Quick Pills -->
+    <div class="d-flex gap-2 overflow-auto pb-3 mb-3">
+        <a href="{{ url_for('store') }}" class="btn btn-sm rounded-pill {{ 'btn-divine-primary' if not selected_category else 'btn-outline-dark' }}">
+            All Items
+        </a>
+        {% for cat in categories %}
+        <a href="{{ url_for('store', category=cat) }}" class="btn btn-sm rounded-pill text-nowrap {{ 'btn-divine-primary' if selected_category == cat else 'btn-outline-dark' }}">
+            {{ cat }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="row g-4">
+        {% for item in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card-divine h-100">
+                <div class="card-divine-img-wrap" style="height: 200px;">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy">
+                    <span class="card-tag">⭐ {{ item.rating }}</span>
+                </div>
+                <div class="card-divine-body">
+                    <span class="badge bg-light text-dark border small mb-1 align-self-start">{{ item.category }}</span>
+                    <h5 class="fw-bold fs-6 mb-1 text-dark">{{ item.name }}</h5>
+                    <p class="small text-muted mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ item.description }}
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="fs-5 fw-bold text-danger">₹{{ item.price }}</span>
+                        </div>
+                        <div>
+                            {% if item.stock_quantity > 10 %}
+                            <span class="badge bg-success-subtle text-success small">In Stock</span>
+                            {% elif item.stock_quantity > 0 %}
+                            <span class="badge bg-warning-subtle text-warning-emphasis small">Only {{ item.stock_quantity }} left</span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger small">Sold Out</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <input type="number" id="qty-prod-{{ item.id }}" class="form-control form-control-sm text-center" value="1" min="1" max="{{ item.stock_quantity }}" style="width: 55px;" {{ 'disabled' if item.stock_quantity == 0 else '' }}>
+                        <button onclick="addToCart('product', {{ item.id }}, document.getElementById('qty-prod-{{ item.id }}').value)" class="btn btn-divine-primary btn-sm flex-grow-1" {{ 'disabled' if item.stock_quantity == 0 else '' }}>
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-4 bg-white rounded-3 border">
+        <div style="font-size: 3rem;">🛍️</div>
+        <h4 class="temple-font mt-2">No Items Found</h4>
+        <p class="text-muted small">No pooja samagri matched your current query.</p>
+        <a href="{{ url_for('store') }}" class="btn btn-divine-primary px-4 py-2 mt-2">
+            View All Store Items
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

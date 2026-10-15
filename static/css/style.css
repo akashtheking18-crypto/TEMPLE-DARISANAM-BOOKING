@@ -1,0 +1,603 @@
+/* ==========================================================================
+   DivineConnect - South Indian Devotional & Modern Theme
+   Colors: Sacred Maroon, Deep Saffron, Temple Gold, and Warm Cream
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --color-maroon-dark: #4A0E0E;
+    --color-maroon: #6E1212;
+    --color-maroon-light: #8B1E1E;
+    --color-saffron: #D9531E;
+    --color-saffron-light: #F26A36;
+    --color-gold: #C59B27;
+    --color-gold-light: #ECC765;
+    --color-gold-border: #E2C97C;
+    --color-cream: #FAF6EF;
+    --color-cream-light: #FFFDF9;
+    --color-sand: #F3EBDD;
+    --color-dark: #2A1A17;
+    --color-muted: #6B5B53;
+    --color-card-bg: #FFFFFF;
+    --shadow-soft: 0 4px 20px rgba(110, 18, 18, 0.08);
+    --shadow-gold: 0 8px 30px rgba(197, 155, 39, 0.22);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--color-cream);
+    color: var(--color-dark);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Headings with Royal Temple Typography */
+h1, h2, h3, .temple-font {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.5px;
+    color: var(--color-maroon-dark);
+}
+
+/* Top Decorative Devotional Bar */
+.top-devotional-bar {
+    background: linear-gradient(90deg, #380808 0%, #6E1212 50%, #380808 100%);
+    color: #F8E7BE;
+    font-size: 0.82rem;
+    padding: 6px 0;
+    border-bottom: 2px solid var(--color-gold);
+    letter-spacing: 0.5px;
+}
+
+.top-devotional-bar a {
+    color: var(--color-gold-light);
+    text-decoration: none;
+}
+
+/* Main Navigation */
+.navbar-divine {
+    background: rgba(255, 253, 249, 0.98);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 18px rgba(90, 14, 14, 0.08);
+    border-bottom: 1px solid var(--color-gold-border);
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.navbar-brand-divine {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.navbar-brand-divine .brand-logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-maroon) 0%, var(--color-saffron) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gold-light);
+    font-size: 1.4rem;
+    box-shadow: 0 2px 10px rgba(217, 83, 30, 0.35);
+    border: 2px solid var(--color-gold);
+}
+
+.navbar-brand-divine .brand-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+    line-height: 1.1;
+    margin: 0;
+}
+
+.navbar-brand-divine .brand-tagline {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-saffron);
+}
+
+.nav-link-divine {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-dark) !important;
+    padding: 8px 14px !important;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-link-divine:hover, .nav-link-divine.active {
+    color: var(--color-maroon) !important;
+    background-color: rgba(217, 83, 30, 0.08);
+}
+
+/* Badges */
+.badge-divine {
+    background: linear-gradient(135deg, var(--color-saffron), var(--color-maroon));
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 12px;
+}
+
+/* Sacred Buttons */
+.btn-divine-primary {
+    background: linear-gradient(135deg, var(--color-maroon) 0%, #8E1B1B 100%);
+    color: #FFFDF9;
+    border: 1px solid var(--color-gold);
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 3px 12px rgba(110, 18, 18, 0.25);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-divine-primary:hover {
+    background: linear-gradient(135deg, #8E1B1B 0%, var(--color-saffron) 100%);
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(217, 83, 30, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-divine-gold {
+    background: linear-gradient(135deg, var(--color-gold) 0%, #A67E14 100%);
+    color: #FFFFFF;
+    border: none;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 14px rgba(197, 155, 39, 0.3);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-divine-gold:hover {
+    background: linear-gradient(135deg, #ECC765 0%, var(--color-gold) 100%);
+    color: var(--color-maroon-dark);
+    transform: translateY(-1px);
+}
+
+.btn-divine-outline {
+    background: transparent;
+    border: 1.5px solid var(--color-maroon);
+    color: var(--color-maroon);
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-divine-outline:hover {
+    background-color: var(--color-maroon);
+    color: white;
+}
+
+/* Hero Section */
+.hero-divine {
+    position: relative;
+    background: linear-gradient(135deg, rgba(74, 14, 14, 0.94) 0%, rgba(139, 30, 30, 0.88) 100%),
+                url('https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    color: #FFFDF9;
+    padding: 70px 0 65px;
+    border-bottom: 4px solid var(--color-gold);
+}
+
+.hero-divine::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background: repeating-linear-gradient(45deg, var(--color-gold), var(--color-gold) 10px, #FAF6EF 10px, #FAF6EF 20px);
+    opacity: 0.8;
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #FFF8E7;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 12px;
+}
+
+.hero-title span {
+    color: var(--color-gold-light);
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: #F8E8D0;
+    max-width: 650px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* Search Bar in Hero */
+.hero-search-card {
+    background: rgba(255, 253, 249, 0.98);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--color-gold-border);
+    margin-top: 25px;
+}
+
+/* Quick Nav Tiles */
+.quick-tile {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-gold-border);
+    border-radius: var(--radius-md);
+    padding: 22px 18px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    text-decoration: none;
+    color: var(--color-dark);
+    display: block;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-maroon), var(--color-gold));
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.quick-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-gold);
+    border-color: var(--color-gold);
+    color: var(--color-maroon);
+}
+
+.quick-tile:hover::before {
+    opacity: 1;
+}
+
+.quick-tile-icon {
+    font-size: 2.6rem;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.quick-tile-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--color-maroon-dark);
+}
+
+.quick-tile-desc {
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    margin: 0;
+}
+
+/* Sacred Cards */
+.card-divine {
+    background: var(--color-card-bg);
+    border: 1px solid rgba(226, 201, 124, 0.6);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-divine:hover {
+    box-shadow: 0 10px 25px rgba(110, 18, 18, 0.12);
+    border-color: var(--color-gold);
+    transform: translateY(-4px);
+}
+
+.card-divine-img-wrap {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background-color: var(--color-sand);
+}
+
+.card-divine-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.card-divine:hover .card-divine-img-wrap img {
+    transform: scale(1.05);
+}
+
+.card-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(110, 18, 18, 0.9);
+    color: var(--color-gold-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--color-gold);
+}
+
+.card-divine-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-divine-title {
+    font-size: 1.18rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.card-location {
+    font-size: 0.84rem;
+    color: var(--color-saffron);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-deity {
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    margin-bottom: 12px;
+}
+
+/* Sacred Devotional Ticket (Printable pass) */
+.ticket-container {
+    max-width: 780px;
+    margin: 30px auto;
+    background: #FFFDF9;
+    border: 3px double var(--color-gold);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 32px rgba(110, 18, 18, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.ticket-header {
+    background: linear-gradient(90deg, #4A0E0E 0%, #7F1D1D 50%, #4A0E0E 100%);
+    color: #FFFDF9;
+    padding: 20px 24px;
+    border-bottom: 3px solid var(--color-gold);
+    text-align: center;
+    position: relative;
+}
+
+.ticket-header .ticket-gopuram-icon {
+    font-size: 2.2rem;
+    color: var(--color-gold-light);
+    margin-bottom: 4px;
+}
+
+.ticket-body {
+    padding: 28px;
+}
+
+.ticket-ref-badge {
+    background: var(--color-sand);
+    border: 1px dashed var(--color-maroon);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+}
+
+.ticket-qr-box {
+    background: #FAF6EF;
+    border: 2px solid var(--color-gold-border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: inline-block;
+    text-align: center;
+}
+
+.ticket-qr-box img {
+    width: 160px;
+    height: 160px;
+}
+
+.ticket-footer {
+    background: var(--color-sand);
+    border-top: 1px solid var(--color-gold-border);
+    padding: 14px 24px;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+}
+
+/* Traditional Kolam / Corner Motifs */
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.section-header .section-subtitle {
+    color: var(--color-saffron);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+}
+
+.section-header .section-title {
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--color-gold);
+    font-size: 1.1rem;
+}
+
+.section-divider::before, .section-divider::after {
+    content: '';
+    width: 60px;
+    height: 1px;
+    background: var(--color-gold);
+}
+
+/* Forms and Inputs */
+.form-label-divine {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-maroon-dark);
+    margin-bottom: 5px;
+}
+
+.form-control-divine, .form-select-divine {
+    background-color: #FFFDF9;
+    border: 1.5px solid #D8C8B4;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.form-control-divine:focus, .form-select-divine:focus {
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(110, 18, 18, 0.12);
+    outline: none;
+}
+
+/* Devotee Row Box in Booking Form */
+.devotee-card-box {
+    background: var(--color-cream-light);
+    border: 1px solid var(--color-gold-border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+/* Footer */
+.footer-divine {
+    background: #360909;
+    color: #F8E8D0;
+    margin-top: auto;
+    padding: 50px 0 20px;
+    border-top: 4px solid var(--color-gold);
+}
+
+.footer-divine a {
+    color: #E2C97C;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-divine a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.footer-divider {
+    border-color: rgba(226, 201, 124, 0.25);
+    margin: 30px 0 20px;
+}
+
+/* Floating Toast / Notification Alert */
+.alert-divine {
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-weight: 500;
+    font-size: 0.92rem;
+}
+
+/* Demo Disclaimer Banner */
+.demo-banner {
+    background: #FFF3CD;
+    color: #856404;
+    border-left: 4px solid #FFEBAA;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Print styles for QR ticket */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .ticket-container, .ticket-container * {
+        visibility: visible;
+    }
+    .ticket-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: 2px solid #000;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-divine {
+        padding: 40px 0;
+    }
+}

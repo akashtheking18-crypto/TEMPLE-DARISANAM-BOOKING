@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+
+{% block title %}Devotee Dashboard – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-1">Devotee Member Portal</span>
+                <h1 class="temple-font text-white mb-0 fs-2">{{ user.name }}</h1>
+                <small class="text-light-emphasis">{{ user.email }} • Member since {{ user.created_at.strftime('%B %Y') }}</small>
+            </div>
+            {% if user.is_admin %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-warning fw-bold">
+                <i class="bi bi-shield-lock-fill"></i> Open Admin Portal
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Stat Counter Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+            <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3" style="border-color: var(--color-gold-border) !important;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-maroon);">
+                    🛕
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ darshan_bookings|length }}</h3>
+                    <small class="text-muted">Darshan Passes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3" style="border-color: var(--color-gold-border) !important;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-saffron);">
+                    🪔
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ pooja_bookings|length }}</h3>
+                    <small class="text-muted">Pooja Sevas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="p-3 bg-white rounded-3 border shadow-sm d-flex align-items-center gap-3" style="border-color: var(--color-gold-border) !important;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #FAF5EB; font-size: 1.6rem; color: var(--color-gold);">
+                    🍯
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ orders|length }}</h3>
+                    <small class="text-muted">Prasadam & Store Orders</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 gap-2" id="dashboardTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active px-4 py-2 fw-semibold" id="darshan-tab" data-bs-toggle="tab" data-bs-target="#darshan-pane" type="button" role="tab">
+                <i class="bi bi-ticket-perforated"></i> Darshan Tickets
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link px-4 py-2 fw-semibold" id="pooja-tab" data-bs-toggle="tab" data-bs-target="#pooja-pane" type="button" role="tab">
+                <i class="bi bi-fire"></i> Pooja Bookings
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link px-4 py-2 fw-semibold" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-pane" type="button" role="tab">
+                <i class="bi bi-bag-check"></i> Orders & Tracking
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link px-4 py-2 fw-semibold" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane" type="button" role="tab">
+                <i class="bi bi-person-gear"></i> Devotee Profile
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="dashboardTabsContent">
+        
+        <!-- Tab 1: Darshan Tickets -->
+        <div class="tab-pane fade show active" id="darshan-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0">Your Darshan Passes</h5>
+                    <a href="{{ url_for('temples') }}" class="btn btn-divine-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Book New Darshan
+                    </a>
+                </div>
+
+                {% if darshan_bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Temple</th>
+                                <th>Darshan Date & Slot</th>
+                                <th>Category</th>
+                                <th>Devotees</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in darshan_bookings %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-light text-danger border fw-bold">{{ b.booking_reference }}</span>
+                                    <small class="d-block text-muted" style="font-size: 0.7rem;">{{ b.created_at.strftime('%d-%b-%Y') }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ b.temple.name.split()[0:4]|join(' ') }}</strong>
+                                    <small class="d-block text-muted">{{ b.temple.city }}</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">{{ b.darshan_date.strftime('%d %B %Y') }}</span>
+                                    <small class="d-block text-danger">{{ b.slot.start_time }} - {{ b.slot.end_time }}</small>
+                                </td>
+                                <td>{{ b.category }}</td>
+                                <td>{{ b.total_devotees }} Devotee(s)</td>
+                                <td>
+                                    {% if b.status == 'Confirmed' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% elif b.status == 'Cancelled' %}
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                    {% else %}
+                                    <span class="badge bg-info text-dark">{{ b.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('ticket_view', booking_ref=b.booking_reference) }}" class="btn btn-outline-danger btn-sm" title="View e-Ticket">
+                                        <i class="bi bi-qr-code"></i> View Ticket
+                                    </a>
+                                    {% if b.status == 'Confirmed' and b.darshan_date > today %}
+                                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal-{{ b.id }}" title="Cancel Ticket">
+                                        Cancel
+                                    </button>
+
+                                    <!-- Cancellation Modal -->
+                                    <div class="modal fade text-start" id="cancelModal-{{ b.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title fs-6">Cancel Darshan Ticket</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form action="{{ url_for('cancel_booking', booking_ref=b.booking_reference) }}" method="POST">
+                                                    <div class="modal-body">
+                                                        <p class="small mb-2">Are you sure you want to cancel booking <strong>{{ b.booking_reference }}</strong> for <strong>{{ b.temple.name }}</strong> on {{ b.darshan_date }}?</p>
+                                                        <div class="p-2 bg-light border rounded small mb-3">
+                                                            <strong>Refund Policy:</strong> As per temple rules, full refund is initiated to the source payment method within 3-5 working days.
+                                                        </div>
+                                                        <label class="form-label small">Reason for Cancellation:</label>
+                                                        <select name="cancellation_reason" class="form-select form-select-sm">
+                                                            <option value="Personal travel plan changes">Personal travel plan changes</option>
+                                                            <option value="Devotee unwell">Devotee unwell</option>
+                                                            <option value="Booking error / date change">Booking error / date change</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Keep Token</button>
+                                                        <button type="submit" class="btn btn-sm btn-danger">Confirm Cancellation</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div style="font-size: 3rem;">🛕</div>
+                    <h5 class="temple-font mt-2">No Darshan Tickets Yet</h5>
+                    <p class="text-muted small">Reserve a slot at Meenakshi Amman, Tirupati Balaji, Thanjai Periya Kovil, and more.</p>
+                    <a href="{{ url_for('temples') }}" class="btn btn-divine-primary btn-sm px-3">
+                        Book Darshan Now
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tab 2: Pooja Bookings -->
+        <div class="tab-pane fade" id="pooja-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0">Your Vedic Pooja Bookings</h5>
+                    <a href="{{ url_for('temples') }}#poojas" class="btn btn-divine-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Book New Pooja
+                    </a>
+                </div>
+
+                {% if pooja_bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Pooja Name</th>
+                                <th>Temple</th>
+                                <th>Date & Timing</th>
+                                <th>Devotee Sankalpam</th>
+                                <th>Dakshina</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pb in pooja_bookings %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-light text-danger border fw-bold">{{ pb.booking_reference }}</span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">{{ pb.pooja.name }}</strong>
+                                    <small class="d-block text-muted">Deity: {{ pb.pooja.deity }}</small>
+                                </td>
+                                <td>{{ pb.temple.name.split()[0:3]|join(' ') }}</td>
+                                <td>
+                                    <span class="fw-bold">{{ pb.pooja_date.strftime('%d %B %Y') }}</span>
+                                    <small class="d-block text-muted">{{ pb.time_slot }}</small>
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold">{{ pb.devotee_name }}</div>
+                                    <small class="text-muted">{{ pb.nakshatra or 'N/A' }} • {{ pb.gothra or 'N/A' }}</small>
+                                </td>
+                                <td class="fw-bold text-danger">₹{{ pb.total_amount }}</td>
+                                <td><span class="badge bg-success">{{ pb.status }}</span></td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('pooja_ticket_view', booking_ref=pb.booking_reference) }}" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-card-text"></i> Pooja Pass
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div style="font-size: 3rem;">🪔</div>
+                    <h5 class="temple-font mt-2">No Pooja Sevas Booked</h5>
+                    <p class="text-muted small">Perform sacred Archana, Rudrabhishekam, or Kalyana Utsavam with your family sankalpam.</p>
+                    <a href="{{ url_for('temples') }}#poojas" class="btn btn-divine-primary btn-sm px-3">
+                        Explore Poojas
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tab 3: Orders & Tracking -->
+        <div class="tab-pane fade" id="orders-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0">Prasadam & Pooja Store Orders</h5>
+                    <a href="{{ url_for('prasadam') }}" class="btn btn-divine-primary btn-sm">
+                        <i class="bi bi-cart-plus"></i> Order Offerings
+                    </a>
+                </div>
+
+                {% if orders %}
+                <div class="d-flex flex-column gap-3">
+                    {% for o in orders %}
+                    <div class="p-3 border rounded-3" style="background: var(--color-cream-light);">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                            <div>
+                                <span class="badge bg-danger fs-6">{{ o.order_reference }}</span>
+                                <small class="text-muted ms-2">Ordered on {{ o.created_at.strftime('%d %B %Y, %I:%M %p') }}</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-success px-3 py-1">{{ o.order_status }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 small text-muted mb-2">
+                            <div class="col-md-4">
+                                <strong>Fulfillment:</strong> {{ o.delivery_type }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Tracking ID:</strong> <code>{{ o.tracking_number }}</code>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <strong>Total Paid:</strong> <span class="fs-6 fw-bold text-danger">₹{{ o.total_amount }}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-white rounded border small mb-2">
+                            <strong>Items:</strong>
+                            {% for item in o.items %}
+                                {{ item.item_name }} (x{{ item.quantity }}){{ ', ' if not loop.last else '' }}
+                            {% endfor %}
+                        </div>
+
+                        <div class="text-end">
+                            <a href="{{ url_for('checkout_success', order_ref=o.order_reference) }}" class="btn btn-outline-danger btn-sm">
+                                View Receipt & Live Tracking
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div style="font-size: 3rem;">🍯</div>
+                    <h5 class="temple-font mt-2">No Orders Yet</h5>
+                    <p class="text-muted small">Order pure Tirupati Laddus, Palani Panchamirtham, or pooja kits directly to your doorstep.</p>
+                    <a href="{{ url_for('prasadam') }}" class="btn btn-divine-primary btn-sm px-3">
+                        Order Prasadam
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tab 4: Profile Settings -->
+        <div class="tab-pane fade" id="profile-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Edit Devotee Profile & Vedic Details</h5>
+
+                <form action="{{ url_for('update_profile') }}" method="POST">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Devotee Full Name *</label>
+                            <input type="text" name="name" class="form-control form-control-divine" value="{{ user.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Contact Phone *</label>
+                            <input type="tel" name="phone" class="form-control form-control-divine" value="{{ user.phone or '' }}" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label-divine">Delivery / Residential Address</label>
+                            <input type="text" name="address" class="form-control form-control-divine" value="{{ user.address or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">City</label>
+                            <input type="text" name="city" class="form-control form-control-divine" value="{{ user.city or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">State</label>
+                            <input type="text" name="state" class="form-control form-control-divine" value="{{ user.state or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Pincode</label>
+                            <input type="text" name="pincode" class="form-control form-control-divine" value="{{ user.pincode or '' }}">
+                        </div>
+                    </div>
+
+                    <h6 class="temple-font text-danger border-bottom pb-1 mb-3 mt-4">Vedic Sankalpam Lineage</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Nakshatram</label>
+                            <input type="text" name="nakshatra" class="form-control form-control-divine" placeholder="e.g. Aswini, Rohini" value="{{ user.nakshatra or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Rasi (Moon Sign)</label>
+                            <input type="text" name="rasi" class="form-control form-control-divine" placeholder="e.g. Mesham, Vrishabham" value="{{ user.rasi or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-divine">Gothram</label>
+                            <input type="text" name="gothra" class="form-control form-control-divine" placeholder="e.g. Kashyapa, Bharadwaja" value="{{ user.gothra or '' }}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-divine-primary px-4 py-2">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

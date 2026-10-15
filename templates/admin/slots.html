@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Slots & Poojas – Admin Portal{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-dark text-white border-bottom border-warning">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h1 class="temple-font text-white mb-0 fs-3">Darshan Slots & Pooja Seva Schedules</h1>
+            <small class="text-warning">Define quota capacities, timings, and dakshina rates to prevent double booking.</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#newSlotModal">
+                <i class="bi bi-clock-plus"></i> Add Darshan Slot
+            </button>
+            <button class="btn btn-danger btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#newPoojaModal">
+                <i class="bi bi-fire"></i> Add Pooja Seva
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Filter by Temple -->
+    <div class="p-3 mb-4 rounded-3 border bg-white shadow-sm d-flex align-items-center gap-3">
+        <label class="form-label-divine small mb-0 text-nowrap">Filter by Temple:</label>
+        <select class="form-select form-select-sm" onchange="location.href='{{ url_for('admin_slots') }}?temple_id=' + this.value">
+            <option value="">All Temples</option>
+            {% for t in temples %}
+            <option value="{{ t.id }}" {{ 'selected' if selected_temple_id == t.id }}>{{ t.name }} ({{ t.city }})</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- 1. Darshan Slots Table -->
+    <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+        <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Active Darshan Slots</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Temple</th>
+                        <th>Slot Name</th>
+                        <th>Timings</th>
+                        <th>Max Capacity</th>
+                        <th>General Price</th>
+                        <th>Special Price</th>
+                        <th>VIP Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in slots %}
+                    <tr>
+                        <td class="fw-bold">{{ s.temple.name.split()[0:3]|join(' ') }}</td>
+                        <td>{{ s.slot_name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ s.start_time }} - {{ s.end_time }}</span></td>
+                        <td><span class="badge bg-primary-subtle text-primary">{{ s.max_capacity }} devotees/slot</span></td>
+                        <td class="text-success fw-bold">Free</td>
+                        <td class="text-danger fw-bold">₹{{ s.price_special }}</td>
+                        <td class="text-primary fw-bold">₹{{ s.price_vip }}</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" class="text-center text-muted">No darshan slots configured.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. Sacred Poojas Table -->
+    <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+        <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Sacred Poojas & Abhishekam Sevas</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Temple</th>
+                        <th>Pooja Name</th>
+                        <th>Deity</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                        <th>Included Items</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in poojas %}
+                    <tr>
+                        <td class="fw-bold">{{ p.temple.name.split()[0:3]|join(' ') }}</td>
+                        <td class="fw-bold text-dark">{{ p.name }}</td>
+                        <td>{{ p.deity }}</td>
+                        <td class="text-danger fw-bold">₹{{ p.price }}</td>
+                        <td>{{ p.duration_mins }} mins</td>
+                        <td class="text-muted">{{ p.items_included }}</td>
+                        <td><span class="badge bg-success">Available</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center text-muted">No pooja sevas listed.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: New Darshan Slot -->
+<div class="modal fade" id="newSlotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fs-6">Add Darshan Slot</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin_slot_create') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Select Temple *</label>
+                        <select name="temple_id" class="form-select form-select-sm" required>
+                            {% for t in temples %}
+                            <option value="{{ t.id }}" {{ 'selected' if selected_temple_id == t.id }}>{{ t.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Slot Name *</label>
+                        <input type="text" name="slot_name" class="form-control form-control-sm" placeholder="e.g. Early Morning Ushakkala Slot" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label-divine small mb-1">Start Time *</label>
+                            <input type="text" name="start_time" class="form-control form-control-sm" placeholder="06:00 AM" value="06:00 AM" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-divine small mb-1">End Time *</label>
+                            <input type="text" name="end_time" class="form-control form-control-sm" placeholder="08:30 AM" value="08:30 AM" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label-divine small mb-1">Max Capacity *</label>
+                            <input type="number" name="max_capacity" class="form-control form-control-sm" value="200" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label-divine small mb-1">Special Price</label>
+                            <input type="number" name="price_special" class="form-control form-control-sm" value="100" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label-divine small mb-1">VIP Price</label>
+                            <input type="number" name="price_vip" class="form-control form-control-sm" value="300" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-danger">Create Slot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: New Pooja Seva -->
+<div class="modal fade" id="newPoojaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-6">Add New Pooja Seva</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin_pooja_create') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Select Temple *</label>
+                        <select name="temple_id" class="form-select form-select-sm" required>
+                            {% for t in temples %}
+                            <option value="{{ t.id }}" {{ 'selected' if selected_temple_id == t.id }}>{{ t.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Pooja Name *</label>
+                        <input type="text" name="name" class="form-control form-control-sm" placeholder="e.g. Navagraha Dosha Nivarana Pooja" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label-divine small mb-1">Presiding Deity *</label>
+                            <input type="text" name="deity" class="form-control form-control-sm" placeholder="e.g. Lord Shiva" required>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label-divine small mb-1">Dakshina (₹) *</label>
+                            <input type="number" name="price" class="form-control form-control-sm" value="250" required>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label-divine small mb-1">Duration (Min)</label>
+                            <input type="number" name="duration_mins" class="form-control form-control-sm" value="30">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Description *</label>
+                        <textarea name="description" class="form-control form-control-sm" rows="2" placeholder="Spiritual benefits and Vedic procedure..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-divine small mb-1">Items Included in Pooja</label>
+                        <input type="text" name="items_included" class="form-control form-control-sm" value="Kumkum, Vibhuti, Sandal paste, Prasadam Packet">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-danger">Save Pooja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

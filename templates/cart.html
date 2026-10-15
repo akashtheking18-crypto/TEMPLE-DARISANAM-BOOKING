@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Sacred Cart & Checkout – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container text-center">
+        <h1 class="temple-font text-white mb-1 fs-2">Your Devotional Cart</h1>
+        <p class="small text-light-emphasis mb-0">Review your sacred pooja items and consecrated temple prasadams.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    {% if items %}
+    <div class="row g-4">
+        <!-- Cart Items List -->
+        <div class="col-lg-7">
+            <div class="bg-white p-4 rounded-3 border shadow-sm mb-4" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0">Sacred Offerings ({{ items|length }} Items)</h5>
+                    <a href="{{ url_for('store') }}" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-plus-lg"></i> Add More Items
+                    </a>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for item in items %}
+                    <div class="p-3 border rounded-3 d-flex align-items-center gap-3" style="background: var(--color-cream-light);">
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <span class="badge bg-light text-muted border small mb-1">{{ item.item_type|capitalize }}</span>
+                            <h6 class="fw-bold mb-1 text-dark fs-6">{{ item.name }}</h6>
+                            <span class="text-danger fw-bold">₹{{ item.price }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button onclick="updateCartQty('{{ item.key }}', {{ item.quantity - 1 }})" class="btn btn-outline-secondary btn-sm px-2 py-0 fs-5">−</button>
+                            <span class="fw-bold px-2">{{ item.quantity }}</span>
+                            <button onclick="updateCartQty('{{ item.key }}', {{ item.quantity + 1 }})" class="btn btn-outline-secondary btn-sm px-2 py-0 fs-5">+</button>
+                        </div>
+                        <div class="text-end" style="min-width: 80px;">
+                            <span class="fw-bold text-dark fs-6 d-block">₹{{ item.total }}</span>
+                            <button onclick="removeCartItem('{{ item.key }}')" class="btn btn-link text-danger p-0 small text-decoration-none" title="Remove item">
+                                <i class="bi bi-trash3"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout & Delivery Options -->
+        <div class="col-lg-5">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Delivery & Fulfillment</h5>
+
+                <form id="checkout-form" action="{{ url_for('checkout') }}" method="POST">
+                    <!-- Delivery Type Options -->
+                    <div class="mb-3">
+                        <label class="form-label-divine">Fulfillment Mode *</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="delivery_type" id="dt-delivery" value="Doorstep Delivery" checked onchange="toggleDeliveryFields()">
+                            <label class="btn btn-outline-danger flex-fill small py-2" for="dt-delivery">
+                                <i class="bi bi-truck me-1"></i> Doorstep Delivery
+                            </label>
+
+                            <input type="radio" class="btn-check" name="delivery_type" id="dt-pickup" value="Temple Counter Pickup" onchange="toggleDeliveryFields()">
+                            <label class="btn btn-outline-danger flex-fill small py-2" for="dt-pickup">
+                                <i class="bi bi-bank me-1"></i> Temple Pickup
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Temple Counter Dropdown (if pickup selected) -->
+                    <div id="temple-pickup-box" class="mb-3" style="display: none;">
+                        <label class="form-label-divine">Select Temple Counter for Pickup *</label>
+                        <select name="pickup_temple_id" class="form-select form-select-divine">
+                            {% for t in temples %}
+                            <option value="{{ t.id }}">{{ t.name }} ({{ t.city }})</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted" style="font-size: 0.75rem;">Collect within 48 hours with Order Reference ID.</small>
+                    </div>
+
+                    <!-- Shipping Address Fields -->
+                    <div id="shipping-address-box">
+                        <div class="mb-2">
+                            <label class="form-label-divine small mb-1">Recipient Name *</label>
+                            <input type="text" name="shipping_name" class="form-control form-control-sm" placeholder="Full Name" value="{{ user_info.name if user_info else '' }}" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label-divine small mb-1">Mobile Phone Number *</label>
+                            <input type="tel" name="shipping_phone" class="form-control form-control-sm" placeholder="10-digit mobile number" value="{{ user_info.phone if user_info else '' }}" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label-divine small mb-1">Delivery Address *</label>
+                            <input type="text" name="shipping_address" class="form-control form-control-sm" placeholder="House/Flat No, Street, Landmark" value="{{ user_info.address if user_info else '' }}" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label-divine small mb-1">City *</label>
+                                <input type="text" name="shipping_city" class="form-control form-control-sm" placeholder="City" value="{{ user_info.city if user_info else 'Chennai' }}" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-divine small mb-1">Pincode *</label>
+                                <input type="text" name="shipping_pincode" class="form-control form-control-sm" placeholder="600001" value="{{ user_info.pincode if user_info else '600004' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bill Summary -->
+                    <div class="p-3 rounded-3 border mb-4" style="background: var(--color-sand); border-color: var(--color-gold-border) !important;">
+                        <div class="d-flex justify-content-between mb-1 small">
+                            <span class="text-muted">Items Subtotal:</span>
+                            <span class="fw-semibold">₹{{ subtotal }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Packaging & Express Courier:</span>
+                            <span id="shipping-fee-text" class="fw-semibold {{ 'text-success' if shipping_fee == 0 else '' }}">
+                                {{ 'FREE' if shipping_fee == 0 else '₹' ~ shipping_fee }}
+                            </span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-6 text-dark">Grand Total:</span>
+                            <span id="cart-grand-total" class="fw-bold fs-4 text-danger">₹{{ total_amount }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Trigger Button -->
+                    <button type="button" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold" onclick="handleCheckoutSubmit()">
+                        <i class="bi bi-shield-lock-fill"></i> Proceed to Pay & Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-5 bg-white rounded-3 border">
+        <div style="font-size: 4rem;">🛍️</div>
+        <h3 class="temple-font mt-3">Your Devotional Cart is Empty</h3>
+        <p class="text-muted small">Add authentic temple prasadams or blessed pooja store samagri to begin.</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="{{ url_for('prasadam') }}" class="btn btn-divine-primary px-4 py-2">
+                Order Prasadam
+            </a>
+            <a href="{{ url_for('store') }}" class="btn btn-divine-gold px-4 py-2">
+                Browse Pooja Store
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function toggleDeliveryFields() {
+    const isPickup = document.getElementById('dt-pickup').checked;
+    const pickupBox = document.getElementById('temple-pickup-box');
+    const addressBox = document.getElementById('shipping-address-box');
+    const shippingText = document.getElementById('shipping-fee-text');
+    const totalDisplay = document.getElementById('cart-grand-total');
+
+    const subtotal = {{ subtotal }};
+    let fee = {{ shipping_fee }};
+
+    if (isPickup) {
+        pickupBox.style.display = 'block';
+        addressBox.style.display = 'none';
+        addressBox.querySelectorAll('input').forEach(i => i.required = false);
+        fee = 0;
+        shippingText.textContent = 'FREE (Pickup)';
+        shippingText.className = 'text-success fw-semibold';
+    } else {
+        pickupBox.style.display = 'none';
+        addressBox.style.display = 'block';
+        addressBox.querySelectorAll('input').forEach(i => i.required = true);
+        fee = subtotal >= 500 ? 0 : 40;
+        shippingText.textContent = fee === 0 ? 'FREE' : `₹${fee}`;
+    }
+
+    const finalTotal = subtotal + fee;
+    totalDisplay.textContent = `₹${finalTotal}`;
+}
+
+function handleCheckoutSubmit() {
+    const form = document.getElementById('checkout-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    {% if not current_user %}
+        alert('Please sign in or register to complete your order.');
+        window.location.href = "{{ url_for('login') }}?next={{ request.path }}";
+        return;
+    {% endif %}
+
+    const totalText = document.getElementById('cart-grand-total').textContent.replace('₹', '');
+    const amount = parseFloat(totalText) || 0;
+
+    initiatePayment('checkout-form', amount, 'Devotional Order');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Sacred Pooja Seva – {{ temple.name }}{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container text-center">
+        <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Vedic Pooja & Sankalpam Seva</div>
+        <h1 class="temple-font text-white mb-1 fs-2">{{ temple.name }}</h1>
+        <p class="small text-light-emphasis mb-0"><i class="bi bi-geo-alt-fill text-warning"></i> {{ temple.city }}, {{ temple.state }}</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-8">
+            <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                
+                <form id="pooja-booking-form" action="{{ url_for('pooja_confirm') }}" method="POST">
+                    <input type="hidden" name="temple_id" value="{{ temple.id }}">
+
+                    <!-- Pooja Selection -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">1</span> Select Sacred Pooja
+                    </h5>
+
+                    <div class="mb-4">
+                        <label class="form-label-divine">Choose Pooja Seva *</label>
+                        <select id="pooja_id" name="pooja_id" class="form-select form-select-divine" required onchange="updatePoojaDetails()">
+                            {% for p in poojas %}
+                            <option value="{{ p.id }}" data-price="{{ p.price }}" data-desc="{{ p.description }}" data-deity="{{ p.deity }}" data-items="{{ p.items_included }}" {{ 'selected' if selected_pooja_id == p.id }}>
+                                {{ p.name }} – ₹{{ p.price }} (Deity: {{ p.deity }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div id="pooja-info-box" class="p-3 mt-2 rounded bg-light border small text-muted">
+                            <div id="pooja-desc-text">Select a sacred seva to view details and Vedic inclusions.</div>
+                            <div class="mt-1"><strong>Sacred Inclusions:</strong> <span id="pooja-items-text">Kumkum, Vibhuti, Akshata</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time Slot -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">2</span> Date & Auspicious Timing
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Auspicious Pooja Date *</label>
+                            <input type="date" name="pooja_date" class="form-control form-control-divine" min="{{ min_date }}" max="{{ max_date }}" value="{{ min_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Time Slot *</label>
+                            <select name="time_slot" class="form-select form-select-divine" required>
+                                <option value="Morning Ushakkala (07:00 AM - 08:30 AM)">Morning Ushakkala (07:00 AM - 08:30 AM)</option>
+                                <option value="Forenoon Nitya Pooja (09:30 AM - 11:00 AM)">Forenoon Nitya Pooja (09:30 AM - 11:00 AM)</option>
+                                <option value="Evening Sayaratchai (05:30 PM - 07:00 PM)">Evening Sayaratchai (05:30 PM - 07:00 PM)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Devotee & Sankalpam Details -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">3</span> Devotee Vedic Sankalpam Details
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Karta / Devotee Full Name *</label>
+                            <input type="text" name="devotee_name" class="form-control form-control-divine" placeholder="e.g. Sundaramurthy" value="{{ user_info.name if user_info else '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Gothram (Family Lineage)</label>
+                            <input type="text" name="gothra" class="form-control form-control-divine" placeholder="e.g. Kashyapa, Bharadwaja, Kaundinya" value="{{ user_info.gothra if user_info and user_info.gothra else '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Birth Star (Nakshatram)</label>
+                            <select name="nakshatra" class="form-select form-select-divine">
+                                <option value="">Select Nakshatram (Optional)</option>
+                                {% for n in nakshatras %}
+                                <option value="{{ n }}" {{ 'selected' if user_info and user_info.nakshatra == n }}>{{ n }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Rasi (Zodiac Moon Sign)</label>
+                            <select name="rasi" class="form-select form-select-divine">
+                                <option value="">Select Rasi (Optional)</option>
+                                {% for r in rasis %}
+                                <option value="{{ r.split()[0] }}" {{ 'selected' if user_info and user_info.rasi == r.split()[0] }}>{{ r }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label-divine">Prarthana / Sankalpam Wish (Optional)</label>
+                            <textarea name="sankalpam_wish" class="form-control form-control-divine" rows="2" placeholder="e.g. Family health, success in education, marriage harmony, peace & prosperity..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Summary -->
+                    <div class="p-3 rounded-3 border mb-4" style="background: var(--color-sand); border-color: var(--color-gold-border) !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-6 text-dark">Dakshina / Seva Amount:</span>
+                            <span id="pooja-total-price" class="fw-bold fs-4 text-danger">₹0</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="button" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold" onclick="handlePoojaSubmit()">
+                        <i class="bi bi-shield-lock-fill"></i> Proceed to Book Pooja
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updatePoojaDetails() {
+    const poojaSelect = document.getElementById('pooja_id');
+    const selected = poojaSelect.options[poojaSelect.selectedIndex];
+    if (!selected) return;
+
+    const price = selected.getAttribute('data-price') || '0';
+    const desc = selected.getAttribute('data-desc') || '';
+    const items = selected.getAttribute('data-items') || '';
+
+    document.getElementById('pooja-desc-text').textContent = desc;
+    document.getElementById('pooja-items-text').textContent = items;
+    document.getElementById('pooja-total-price').textContent = `₹${price}`;
+}
+
+function handlePoojaSubmit() {
+    const form = document.getElementById('pooja-booking-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    {% if not current_user %}
+        alert('Please sign in or register to complete your pooja booking.');
+        window.location.href = "{{ url_for('login') }}?next={{ request.path }}";
+        return;
+    {% endif %}
+
+    const poojaSelect = document.getElementById('pooja_id');
+    const selected = poojaSelect.options[poojaSelect.selectedIndex];
+    const price = parseFloat(selected.getAttribute('data-price') || 0);
+
+    initiatePayment('pooja-booking-form', price, selected.text.split('–')[0].trim());
+}
+
+document.addEventListener('DOMContentLoaded', updatePoojaDetails);
+</script>
+{% endblock %}

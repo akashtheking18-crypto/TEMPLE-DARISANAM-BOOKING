@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Control Portal – DivineConnect{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, #1A0505 0%, #3B0A0A 100%); color: white; border-bottom: 3px solid var(--color-gold);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-1">
+                    <i class="bi bi-shield-lock-fill"></i> Central Devaswom Administration
+                </span>
+                <h1 class="temple-font text-white mb-0 fs-2">Admin Control Dashboard</h1>
+                <small class="text-warning-emphasis">Monitoring temple darshan quotas, pooja schedules & devotional inventory.</small>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('admin_orders') }}" class="btn btn-warning btn-sm fw-bold">
+                    <i class="bi bi-list-check"></i> Manage Bookings & Orders
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-up-right"></i> View Devotee Site
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Admin Stat Metric Cards -->
+    <div class="row g-3 mb-5">
+        <div class="col-lg-3 col-sm-6">
+            <div class="p-4 bg-white rounded-3 border shadow-sm h-100" style="border-left: 5px solid #2E7D32 !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Total Platform Revenue</small>
+                        <h3 class="fw-bold text-success mb-0 fs-3">₹{{ total_revenue }}</h3>
+                    </div>
+                    <div class="fs-1 text-success">💳</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="p-4 bg-white rounded-3 border shadow-sm h-100" style="border-left: 5px solid var(--color-maroon) !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Darshan Bookings</small>
+                        <h3 class="fw-bold text-danger mb-0 fs-3">{{ total_darshan_bookings }}</h3>
+                    </div>
+                    <div class="fs-1 text-danger">🛕</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="p-4 bg-white rounded-3 border shadow-sm h-100" style="border-left: 5px solid var(--color-saffron) !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Pooja Sevas</small>
+                        <h3 class="fw-bold mb-0 fs-3" style="color: var(--color-saffron);">{{ total_pooja_bookings }}</h3>
+                    </div>
+                    <div class="fs-1">🪔</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="p-4 bg-white rounded-3 border shadow-sm h-100" style="border-left: 5px solid var(--color-gold) !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Prasadam / Store Orders</small>
+                        <h3 class="fw-bold text-dark mb-0 fs-3">{{ total_orders }}</h3>
+                    </div>
+                    <div class="fs-1">🍯</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Quick Nav Tabs -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('admin_temples') }}" class="card-divine p-3 text-center text-decoration-none">
+                <div class="fs-2 mb-2">🛕</div>
+                <h6 class="fw-bold text-dark mb-1">Manage Temples</h6>
+                <small class="text-muted">{{ total_temples }} Active Temples</small>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('admin_slots') }}" class="card-divine p-3 text-center text-decoration-none">
+                <div class="fs-2 mb-2">⏱️</div>
+                <h6 class="fw-bold text-dark mb-1">Slots & Poojas</h6>
+                <small class="text-muted">Capacities & Schedules</small>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('admin_store') }}" class="card-divine p-3 text-center text-decoration-none">
+                <div class="fs-2 mb-2">🛍️</div>
+                <h6 class="fw-bold text-dark mb-1">Store & Prasadam</h6>
+                <small class="text-muted">Inventory & Pricing</small>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('admin_orders') }}" class="card-divine p-3 text-center text-decoration-none">
+                <div class="fs-2 mb-2">📋</div>
+                <h6 class="fw-bold text-dark mb-1">Orders & Attendance</h6>
+                <small class="text-muted">Verify & Dispatch</small>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Platform Activity -->
+    <div class="row g-4">
+        <!-- Recent Darshans -->
+        <div class="col-lg-6">
+            <div class="bg-white p-4 rounded-3 border shadow-sm h-100" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0 fs-6">Recent Darshan Tokens</h5>
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-link text-danger p-0 small">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ref</th>
+                                <th>Temple</th>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_darshans %}
+                            <tr>
+                                <td><code>{{ b.booking_reference }}</code></td>
+                                <td class="fw-bold">{{ b.temple.name.split()[0:3]|join(' ') }}</td>
+                                <td>{{ b.darshan_date.strftime('%d-%b') }}</td>
+                                <td>{{ b.category }}</td>
+                                <td><span class="badge bg-success-subtle text-success">{{ b.status }}</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-muted text-center">No bookings yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Store & Prasadam Orders -->
+        <div class="col-lg-6">
+            <div class="bg-white p-4 rounded-3 border shadow-sm h-100" style="border-color: var(--color-gold-border) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 class="temple-font text-danger mb-0 fs-6">Recent Prasadam / Store Orders</h5>
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-link text-danger p-0 small">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Devotee</th>
+                                <th>Amount</th>
+                                <th>Delivery</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for o in recent_orders %}
+                            <tr>
+                                <td><code>{{ o.order_reference }}</code></td>
+                                <td class="fw-bold">{{ o.shipping_name }}</td>
+                                <td class="text-danger fw-bold">₹{{ o.total_amount }}</td>
+                                <td>{{ 'Pickup' if 'Pickup' in o.delivery_type else 'Courier' }}</td>
+                                <td><span class="badge bg-warning-subtle text-dark">{{ o.order_status }}</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-muted text-center">No orders yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

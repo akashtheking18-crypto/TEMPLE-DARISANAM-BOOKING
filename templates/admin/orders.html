@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Bookings & Orders – Admin Portal{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-dark text-white border-bottom border-warning">
+    <div class="container">
+        <h1 class="temple-font text-white mb-0 fs-3">Devotee Bookings, Attendance & Order Fulfillment</h1>
+        <small class="text-warning">Verify darshan gate entry, update order dispatch status, and process cancellations.</small>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Tabs: 1. Darshan Bookings | 2. Pooja Sevas | 3. Orders -->
+    <ul class="nav nav-pills mb-4 gap-2" id="adminOrderTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active px-4 py-2 fw-semibold" id="ad-darshan-tab" data-bs-toggle="tab" data-bs-target="#ad-darshan-pane" type="button" role="tab">
+                <i class="bi bi-ticket-perforated"></i> Darshan Gate Bookings ({{ darshan_bookings|length }})
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link px-4 py-2 fw-semibold" id="ad-pooja-tab" data-bs-toggle="tab" data-bs-target="#ad-pooja-pane" type="button" role="tab">
+                <i class="bi bi-fire"></i> Pooja Seva Registrations ({{ pooja_bookings|length }})
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link px-4 py-2 fw-semibold" id="ad-order-tab" data-bs-toggle="tab" data-bs-target="#ad-order-pane" type="button" role="tab">
+                <i class="bi bi-truck"></i> Store & Prasadam Orders ({{ orders|length }})
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminOrderTabsContent">
+        <!-- 1. Darshan Bookings Pane -->
+        <div class="tab-pane fade show active" id="ad-darshan-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3 border-bottom pb-2">All Darshan Reservations</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ref & Date</th>
+                                <th>Devotee / User</th>
+                                <th>Temple & Slot</th>
+                                <th>Devotees</th>
+                                <th>Category & Fee</th>
+                                <th>Status</th>
+                                <th class="text-end">Update Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in darshan_bookings %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-light text-danger border fw-bold">{{ b.booking_reference }}</span>
+                                    <small class="d-block text-muted">{{ b.darshan_date.strftime('%d-%b-%Y') }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ b.user.name }}</strong>
+                                    <small class="d-block text-muted">{{ b.user.phone or b.user.email }}</small>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">{{ b.temple.name.split()[0:3]|join(' ') }}</strong>
+                                    <small class="d-block text-muted">{{ b.slot.start_time }} - {{ b.slot.end_time }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ b.total_devotees }} Person(s)</span>
+                                </td>
+                                <td>
+                                    <div>{{ b.category }}</div>
+                                    <strong class="text-danger">₹{{ b.total_amount }}</strong>
+                                </td>
+                                <td>
+                                    {% if b.status == 'Confirmed' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% elif b.status == 'Attended' %}
+                                    <span class="badge bg-primary">Attended (Entered)</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ b.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <form action="{{ url_for('admin_update_darshan_status') }}" method="POST" class="d-inline-flex gap-1">
+                                        <input type="hidden" name="booking_id" value="{{ b.id }}">
+                                        <select name="status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
+                                            <option value="Confirmed" {{ 'selected' if b.status == 'Confirmed' }}>Confirmed</option>
+                                            <option value="Attended" {{ 'selected' if b.status == 'Attended' }}>Attended</option>
+                                            <option value="Cancelled" {{ 'selected' if b.status == 'Cancelled' }}>Cancelled</option>
+                                        </select>
+                                    </form>
+                                    <a href="{{ url_for('ticket_view', booking_ref=b.booking_reference) }}" class="btn btn-outline-danger btn-sm" target="_blank" title="View Ticket">
+                                        <i class="bi bi-qr-code"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="7" class="text-center text-muted">No darshan bookings found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Pooja Sevas Pane -->
+        <div class="tab-pane fade" id="ad-pooja-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Sacred Pooja Registrations</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Pooja Name</th>
+                                <th>Temple</th>
+                                <th>Date & Timing</th>
+                                <th>Devotee Sankalpam Details</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th class="text-end">View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pb in pooja_bookings %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-light text-danger border fw-bold">{{ pb.booking_reference }}</span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">{{ pb.pooja.name }}</strong>
+                                    <small class="d-block text-muted">Deity: {{ pb.pooja.deity }}</small>
+                                </td>
+                                <td>{{ pb.temple.name.split()[0:3]|join(' ') }}</td>
+                                <td>
+                                    <span class="fw-bold">{{ pb.pooja_date.strftime('%d-%b-%Y') }}</span>
+                                    <small class="d-block text-muted">{{ pb.time_slot }}</small>
+                                </td>
+                                <td>
+                                    <div><strong>Devotee:</strong> {{ pb.devotee_name }}</div>
+                                    <div class="text-muted"><strong>Nakshatra:</strong> {{ pb.nakshatra or 'N/A' }} | <strong>Gothra:</strong> {{ pb.gothra or 'N/A' }}</div>
+                                    {% if pb.sankalpam_wish %}
+                                    <div class="text-muted fst-italic">"{{ pb.sankalpam_wish }}"</div>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold text-danger">₹{{ pb.total_amount }}</td>
+                                <td><span class="badge bg-success">{{ pb.status }}</span></td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('pooja_ticket_view', booking_ref=pb.booking_reference) }}" class="btn btn-outline-danger btn-sm" target="_blank">
+                                        <i class="bi bi-file-earmark-text"></i> Pass
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="8" class="text-center text-muted">No pooja bookings registered.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Orders Fulfillment Pane -->
+        <div class="tab-pane fade" id="ad-order-pane" role="tabpanel">
+            <div class="bg-white p-4 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                <h5 class="temple-font text-danger mb-3 border-bottom pb-2">Orders Fulfillment & Dispatch Management</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order Ref & Date</th>
+                                <th>Customer & Contact</th>
+                                <th>Fulfillment Mode</th>
+                                <th>Items Ordered</th>
+                                <th>Total</th>
+                                <th>Tracking Number</th>
+                                <th>Status</th>
+                                <th class="text-end">Update Fulfillment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for o in orders %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-danger fs-6">{{ o.order_reference }}</span>
+                                    <small class="d-block text-muted">{{ o.created_at.strftime('%d-%b-%Y %I:%M %p') }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ o.shipping_name }}</strong>
+                                    <small class="d-block text-muted">{{ o.shipping_phone }}</small>
+                                    <small class="d-block text-muted">{{ o.shipping_address }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ o.delivery_type }}</span>
+                                </td>
+                                <td>
+                                    <ul class="mb-0 ps-3">
+                                        {% for itm in o.items %}
+                                        <li>{{ itm.item_name }} (x{{ itm.quantity }})</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="fw-bold text-danger fs-6">₹{{ o.total_amount }}</td>
+                                <td><code>{{ o.tracking_number }}</code></td>
+                                <td>
+                                    <span class="badge bg-success">{{ o.order_status }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <form action="{{ url_for('admin_update_order_status') }}" method="POST" class="d-inline-flex gap-1">
+                                        <input type="hidden" name="order_id" value="{{ o.id }}">
+                                        <select name="order_status" class="form-select form-select-sm" style="width: 140px;" onchange="this.form.submit()">
+                                            <option value="Confirmed" {{ 'selected' if o.order_status == 'Confirmed' }}>Confirmed</option>
+                                            <option value="Preparing" {{ 'selected' if o.order_status == 'Preparing' }}>Preparing</option>
+                                            <option value="Dispatched" {{ 'selected' if o.order_status == 'Dispatched' }}>Dispatched</option>
+                                            <option value="Ready for Pickup" {{ 'selected' if o.order_status == 'Ready for Pickup' }}>Ready for Pickup</option>
+                                            <option value="Delivered" {{ 'selected' if o.order_status == 'Delivered' }}>Delivered</option>
+                                            <option value="Cancelled" {{ 'selected' if o.order_status == 'Cancelled' }}>Cancelled</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="8" class="text-center text-muted">No orders placed yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

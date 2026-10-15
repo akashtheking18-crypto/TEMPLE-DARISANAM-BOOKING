@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Darshan Ticket – {{ temple.name }}{% endblock %}
+
+{% block content %}
+<div class="py-4" style="background: linear-gradient(135deg, var(--color-maroon-dark) 0%, var(--color-maroon) 100%); color: white;">
+    <div class="container text-center">
+        <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Darshan E-Token Reservation</div>
+        <h1 class="temple-font text-white mb-1 fs-2">{{ temple.name }}</h1>
+        <p class="small text-light-emphasis mb-0"><i class="bi bi-geo-alt-fill text-warning"></i> {{ temple.city }}, {{ temple.state }} • {{ temple.opening_time }} to {{ temple.closing_time }}</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-8">
+            <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm" style="border-color: var(--color-gold-border) !important;">
+                
+                <!-- Notice Banner -->
+                <div class="alert alert-info d-flex align-items-center gap-2 small mb-4">
+                    <i class="bi bi-shield-check fs-5 text-primary"></i>
+                    <div>
+                        <strong>Verified Schedule:</strong> Real-time quota check prevents double booking. Government Photo ID proof is required during darshan verification.
+                    </div>
+                </div>
+
+                <form id="darshan-booking-form" action="{{ url_for('darshan_confirm') }}" method="POST">
+                    <input type="hidden" name="temple_id" value="{{ temple.id }}">
+
+                    <!-- Step 1: Date & Slot Selection -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">1</span> Select Visit Date & Darshan Slot
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Darshan Date *</label>
+                            <input type="date" id="darshan_date" name="darshan_date" class="form-control form-control-divine" min="{{ min_date }}" max="{{ max_date }}" value="{{ min_date }}" required>
+                            <small class="text-muted" style="font-size: 0.75rem;">Advance booking available up to 90 days.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Select Time Slot *</label>
+                            <select id="slot_id" name="slot_id" class="form-select form-select-divine" required>
+                                {% for s in slots %}
+                                <option value="{{ s.id }}">
+                                    {{ s.slot_name }} ({{ s.start_time }} - {{ s.end_time }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Slot Live Remaining Capacity Indicator -->
+                    <div id="slot-availability-badge" class="alert alert-success d-flex align-items-center justify-content-between p-2 mb-4" style="display: none;">
+                        <span class="small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Quota Status:</span>
+                        <span id="remaining-count" class="badge bg-success fs-6">Checking availability...</span>
+                    </div>
+
+                    <!-- Step 2: Category & Devotee Count -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">2</span> Ticket Category & Number of Devotees
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Darshan Category *</label>
+                            <select id="category" name="category" class="form-select form-select-divine" required>
+                                <option value="Free Sarva Darshan" data-price="0">Free Sarva Darshan (₹0)</option>
+                                <option value="Special Darshan" data-price="100" selected>Special Darshan (₹100)</option>
+                                <option value="VIP Sheegra Darshan" data-price="300">VIP Sheegra Darshan (₹300)</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.75rem;">Special & VIP queues offer faster sanctum access.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-divine">Number of Devotees *</label>
+                            <select id="devotee_count" name="devotee_count" class="form-select form-select-divine" required>
+                                <option value="1" selected>1 Devotee</option>
+                                <option value="2">2 Devotees</option>
+                                <option value="3">3 Devotees</option>
+                                <option value="4">4 Devotees</option>
+                                <option value="5">5 Devotees</option>
+                                <option value="6">6 Devotees (Max per token)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Devotee Details Forms -->
+                    <h5 class="temple-font text-danger border-bottom pb-2 mb-3">
+                        <span class="badge bg-danger rounded-circle me-1">3</span> Devotee Identity Information
+                    </h5>
+
+                    {% for i in range(1, 7) %}
+                    <div id="devotee-row-{{ i }}" class="devotee-card-box" style="{{ 'display: block;' if i == 1 else 'display: none;' }}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark small"><i class="bi bi-person-fill text-danger"></i> Devotee {{ i }} {{ '(Primary Pilgrim)' if i == 1 else '' }}</span>
+                            <span class="badge bg-light text-muted border">Pilgrim #{{ i }}</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <label class="small text-muted mb-1">Full Name (as per Govt ID) *</label>
+                                <input type="text" name="devotee_name_{{ i }}" class="form-control form-control-sm" placeholder="e.g. Ramesh Sundaram" value="{{ user_info.name if i == 1 and user_info else '' }}" {{ 'required' if i == 1 else '' }}>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <label class="small text-muted mb-1">Age *</label>
+                                <input type="number" name="devotee_age_{{ i }}" class="form-control form-control-sm" min="1" max="110" placeholder="Age" value="32" {{ 'required' if i == 1 else '' }}>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <label class="small text-muted mb-1">Gender *</label>
+                                <select name="devotee_gender_{{ i }}" class="form-select form-select-sm">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted mb-1">ID Proof Type *</label>
+                                <select name="devotee_id_type_{{ i }}" class="form-select form-select-sm">
+                                    <option value="Aadhaar Card">Aadhaar Card</option>
+                                    <option value="Voter ID">Voter ID</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Driving License">Driving License</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label class="small text-muted mb-1">ID Card Number / Last 4 Digits *</label>
+                                <input type="text" name="devotee_id_num_{{ i }}" class="form-control form-control-sm" placeholder="e.g. XXXX-XXXX-1234" value="XXXX-XXXX-4589" {{ 'required' if i == 1 else '' }}>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Booking Summary & Amount Breakdown -->
+                    <div class="p-3 rounded-3 border mb-4" style="background: var(--color-sand); border-color: var(--color-gold-border) !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small">Price per Devotee:</span>
+                            <span id="darshan-unit-price" class="fw-semibold">₹100</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small">Temple Devaswom Seva Fee:</span>
+                            <span class="text-success small">Waived (₹0)</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-6 text-dark">Total Booking Amount:</span>
+                            <span id="darshan-total-price" class="fw-bold fs-4 text-danger">₹100</span>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="form-check mb-4 small">
+                        <input class="form-check-input" type="checkbox" id="terms" required checked>
+                        <label class="form-check-label text-muted" for="terms">
+                            I agree to adhere to the temple dress code (Dhoti/Veshti for Men, Saree/Chudidhar for Women) and present original ID cards at the gate.
+                        </label>
+                    </div>
+
+                    <!-- Submission Button Triggering Razorpay Payment Modal -->
+                    <button type="button" id="btn-confirm-darshan" class="btn btn-divine-primary w-100 py-3 fs-6 fw-bold" onclick="handleDarshanSubmit()">
+                        <i class="bi bi-shield-lock-fill"></i> Proceed to Confirm Booking
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function handleDarshanSubmit() {
+    const form = document.getElementById('darshan-booking-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const catSelect = document.getElementById('category');
+    const countSelect = document.getElementById('devotee_count');
+    const selectedOpt = catSelect.options[catSelect.selectedIndex];
+    const unitPrice = parseFloat(selectedOpt.getAttribute('data-price') || 0);
+    const count = parseInt(countSelect.value) || 1;
+    const total = unitPrice * count;
+
+    initPaymentOrSubmit('darshan-booking-form', total, 'Temple Darshan E-Ticket');
+}
+
+function initPaymentOrSubmit(formId, amount, serviceName) {
+    {% if not current_user %}
+        alert('Please sign in or register to complete your darshan booking.');
+        window.location.href = "{{ url_for('login') }}?next={{ request.path }}";
+        return;
+    {% endif %}
+
+    initiatePayment(formId, amount, serviceName);
+}
+</script>
+{% endblock %}
